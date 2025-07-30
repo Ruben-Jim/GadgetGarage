@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+
 const Quote: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
