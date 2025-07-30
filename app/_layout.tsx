@@ -47,35 +47,35 @@ const RootLayout: React.FC<RootLayoutProps> = () => {
       <Stack.Screen
         name="services"
         options={{
-          title: "Our Services",
+          title: "Menu",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="quote"
         options={{
-          title: "Get Quote",
+          title: "Back",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="messages"
         options={{
-          title: "Messages",
+          title: "Back",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="appointment"
         options={{
-          title: "Book Appointment",
+          title: "Menu",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="payment"
         options={{
-          title: "Payment",
+          title: "Back",
           headerShown: true
         }}
       />
