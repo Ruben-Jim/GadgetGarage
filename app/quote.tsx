@@ -1,6 +1,8 @@
 
+import { db } from "@/FirebaseConfig";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { collection } from "firebase/firestore";
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
@@ -15,6 +17,7 @@ const Quote: React.FC = () => {
     description: "",
     urgency: "normal"
   });
+  const formDataCollection = collection(db, 'form');
 
   const serviceTypes = [
     "Custom PC Build",
@@ -23,6 +26,9 @@ const Quote: React.FC = () => {
     "System Optimization",
     "Other"
   ];
+
+
+
 
   const handleSubmit = () => {
     if (!formData.name || !formData.email || !formData.description) {
