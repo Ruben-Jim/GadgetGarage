@@ -1,29 +1,86 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect } from "react";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+// Prevent the splash screen from auto-hiding before asset loading is complete
+SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+interface RootLayoutProps {}
+
+const RootLayout: React.FC<RootLayoutProps> = () => {
+  const [fontsLoaded] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#2c3e50",
+        },
+        headerTintColor: "#ffffff",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+        
+        
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Gadget Garage",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="services"
+        options={{
+          title: "Our Services",
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="quote"
+        options={{
+          title: "Get Quote",
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="messages"
+        options={{
+          title: "Messages",
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="appointment"
+        options={{
+          title: "Book Appointment",
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="payment"
+        options={{
+          title: "Payment",
+          headerShown: true
+        }}
+      />
+    </Stack>
   );
-}
+};
+
+export default RootLayout;
