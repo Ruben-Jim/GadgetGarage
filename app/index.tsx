@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Index: React.FC = () => {
+const Index = () => {
   const router = useRouter();
 
   const services = [

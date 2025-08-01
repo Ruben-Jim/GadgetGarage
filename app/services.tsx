@@ -15,7 +15,7 @@ interface Service {
   features: string[];
 }
 
-const Services: React.FC = () => {
+const Services = () => {
   const router = useRouter();
 
   const services: Service[] = [

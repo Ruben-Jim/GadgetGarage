@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Appointment: React.FC = () => {
+const Appointment = () => {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");

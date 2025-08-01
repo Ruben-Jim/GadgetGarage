@@ -1,24 +1,29 @@
 
-import { db } from "@/FirebaseConfig";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { collection } from "firebase/firestore";
+import 'firebase/database';
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 
-const Quote: React.FC = () => {
+const Quote = () => {
   const router = useRouter();
+  
+  {/* Old Quote form */}
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     serviceType: "",
     description: "",
-    urgency: "normal"
+    urgency: "normal",
+    
   });
-  const formDataCollection = collection(db, 'form');
 
+  {/* New Quote form */}
+
+  
+  
   const serviceTypes = [
     "Custom PC Build",
     "PC Repair",
@@ -26,9 +31,6 @@ const Quote: React.FC = () => {
     "System Optimization",
     "Other"
   ];
-
-
-
 
   const handleSubmit = () => {
     if (!formData.name || !formData.email || !formData.description) {

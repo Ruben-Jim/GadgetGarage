@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const Payment: React.FC = () => {
+const Payment = () => {
   const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [amount, setAmount] = useState<string>("");

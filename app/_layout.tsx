@@ -40,21 +40,21 @@ const RootLayout: React.FC<RootLayoutProps> = () => {
       <Stack.Screen
         name="index"
         options={{
-          title: "Gadget Garage",
+          title: "Menu",
           headerShown: false,
         }}
       />
       <Stack.Screen
         name="services"
         options={{
-          title: "Menu",
+          title: "Services",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="quote"
         options={{
-          title: "Back",
+          title: "Quote",
           headerShown: true,
         }}
       />

@@ -10,7 +10,7 @@ interface Message {
   timestamp: Date;
 }
 
-const Messages: React.FC = () => {
+const Messages = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
