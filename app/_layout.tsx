@@ -27,48 +27,48 @@ const RootLayout = () => {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#2c3e50",
+          backgroundColor: "#ffffff",
         },
-        headerTintColor: "#ffffff",
+        headerTintColor: "#1e293b",
         headerTitleStyle: {
-          fontWeight: "bold",
+          fontWeight: "700",
+          fontSize: 20,
         },
-        
-        
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: "Menu",
+          title: "Gadget Garage",
           headerShown: false,
         }}
       />
       <Stack.Screen
         name="services"
         options={{
-          title: "Services",
-          headerShown: true,
+          title: "Our Services",
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="quote"
         options={{
-          title: "Quote",
+          title: "Get Quote",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="messages"
         options={{
-          title: "Chat",
+          title: "Messages",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="appointment"
         options={{
-          title: "Appointment",
+          title: "Book Appointment",
           headerShown: true,
         }}
       />

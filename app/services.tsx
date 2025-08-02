@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import BackButton from "../components/BackButton";
 
 interface Service {
   id: number;
@@ -72,6 +73,16 @@ const Services = () => {
           <Text style={styles.subtitle}>Professional PC solutions for every need</Text>
           <View style={styles.headerDecoration} />
         </View>
+      </View>
+
+      {/* Custom Back Button */}
+      <View style={styles.backButtonContainer}>
+        <BackButton 
+      // variant = default, minimal, floating
+          variant="minimal" 
+          color="#059669" 
+          title="Home"
+        />
       </View>
 
       {/* Services Container */}
@@ -166,6 +177,12 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: "#10b981",
     borderRadius: 2,
+  },
+  backButtonContainer: {
+    position: "absolute",
+    top: 50,
+    left: 16,
+    zIndex: 10,
   },
   servicesContainer: {
     padding: 16,
