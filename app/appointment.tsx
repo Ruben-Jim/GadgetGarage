@@ -1,14 +1,17 @@
 
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { db } from "../FirebaseConfig";
 
 const Appointment = () => {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Generate next 14 days
   const generateDates = () => {
@@ -40,46 +43,91 @@ const Appointment = () => {
     "General Consultation"
   ];
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (!selectedDate || !selectedTime || !selectedService) {
       Alert.alert("Missing Information", "Please select a date, time, and service type.");
       return;
     }
 
-    Alert.alert(
-      "Appointment Confirmed!",
-      `Your appointment is scheduled for ${selectedDate} at ${selectedTime} for ${selectedService}.`,
-      [
-        { text: "Make Payment", onPress: () => router.push('/payment') },
-        { text: "OK", style: "default" }
-      ]
-    );
+    setIsSubmitting(true);
+    try {
+      // Add document to Firestore
+      const docRef = await addDoc(collection(db, "appointments"), {
+        service: selectedService,
+        date: selectedDate,
+        time: selectedTime,
+        createdAt: serverTimestamp(),
+        status: "pending"
+      });
+
+      console.log("Appointment booked with ID: ", docRef.id);
+      
+      Alert.alert(
+        "Appointment Confirmed!",
+        `Your appointment is scheduled for ${selectedDate} at ${selectedTime} for ${selectedService}.`,
+        [
+          { text: "Make Payment", onPress: () => router.push('/payment') },
+          { text: "OK", style: "default" }
+        ]
+      );
+
+      // Reset form after successful booking
+      setSelectedDate("");
+      setSelectedTime("");
+      setSelectedService("");
+
+    } catch (error: any) {
+      console.error("Error booking appointment: ", error);
+      
+      let errorMessage = "Failed to save appointment. Please try again.";
+      
+      // Check for specific Firebase errors
+      if (error.code === 'permission-denied') {
+        errorMessage = "Permission denied. Please check your Firebase configuration and security rules.";
+      } else if (error.code === 'unavailable') {
+        errorMessage = "Service temporarily unavailable. Please check your internet connection and try again.";
+      } else if (error.code === 'unauthenticated') {
+        errorMessage = "Authentication required. Please check your Firebase configuration.";
+      }
+      
+      Alert.alert("Booking Error", errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <StatusBar style="dark" />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <StatusBar style="light" />
       
+      {/* Modern Header with Gradient-like Effect */}
       <View style={styles.header}>
-        <Text style={styles.title}>Book Appointment</Text>
-        <Text style={styles.subtitle}>Schedule your in-person visit</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Book Your Appointment</Text>
+          <Text style={styles.subtitle}>Schedule your professional consultation</Text>
+          <View style={styles.headerDecoration} />
+        </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Select Service</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      {/* Service Selection Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>1. Choose Your Service</Text>
+          <Text style={styles.cardSubtitle}>What can we help you with today?</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.serviceContainer}>
           {services.map((service) => (
             <TouchableOpacity
               key={service}
               style={[
-                styles.serviceButton,
-                selectedService === service && styles.serviceButtonActive
+                styles.serviceCard,
+                selectedService === service && styles.serviceCardActive
               ]}
               onPress={() => setSelectedService(service)}
             >
               <Text style={[
-                styles.serviceButtonText,
-                selectedService === service && styles.serviceButtonTextActive
+                styles.serviceCardText,
+                selectedService === service && styles.serviceCardTextActive
               ]}>
                 {service}
               </Text>
@@ -88,32 +136,36 @@ const Appointment = () => {
         </ScrollView>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Select Date</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      {/* Date Selection Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>2. Pick Your Date</Text>
+          <Text style={styles.cardSubtitle}>Available dates for the next 2 weeks</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateContainer}>
           {generateDates().map((dateObj) => (
             <TouchableOpacity
               key={dateObj.date}
               style={[
-                styles.dateButton,
-                selectedDate === dateObj.date && styles.dateButtonActive
+                styles.dateCard,
+                selectedDate === dateObj.date && styles.dateCardActive
               ]}
               onPress={() => setSelectedDate(dateObj.date)}
             >
               <Text style={[
-                styles.dayText,
+                styles.dateDay,
                 selectedDate === dateObj.date && styles.dateTextActive
               ]}>
                 {dateObj.day}
               </Text>
               <Text style={[
-                styles.dayNumText,
+                styles.dateNumber,
                 selectedDate === dateObj.date && styles.dateTextActive
               ]}>
                 {dateObj.dayNum}
               </Text>
               <Text style={[
-                styles.monthText,
+                styles.dateMonth,
                 selectedDate === dateObj.date && styles.dateTextActive
               ]}>
                 {dateObj.month}
@@ -123,21 +175,25 @@ const Appointment = () => {
         </ScrollView>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Select Time</Text>
+      {/* Time Selection Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>3. Select Time</Text>
+          <Text style={styles.cardSubtitle}>Choose your preferred time slot</Text>
+        </View>
         <View style={styles.timeGrid}>
           {timeSlots.map((time) => (
             <TouchableOpacity
               key={time}
               style={[
-                styles.timeButton,
-                selectedTime === time && styles.timeButtonActive
+                styles.timeCard,
+                selectedTime === time && styles.timeCardActive
               ]}
               onPress={() => setSelectedTime(time)}
             >
               <Text style={[
-                styles.timeButtonText,
-                selectedTime === time && styles.timeButtonTextActive
+                styles.timeCardText,
+                selectedTime === time && styles.timeCardTextActive
               ]}>
                 {time}
               </Text>
@@ -146,35 +202,70 @@ const Appointment = () => {
         </View>
       </View>
 
+      {/* Appointment Summary Card */}
       {selectedDate && selectedTime && selectedService && (
-        <View style={styles.summaryContainer}>
-          <Text style={styles.summaryTitle}>Appointment Summary</Text>
-          <Text style={styles.summaryText}>Service: {selectedService}</Text>
-          <Text style={styles.summaryText}>Date: {selectedDate}</Text>
-          <Text style={styles.summaryText}>Time: {selectedTime}</Text>
-          <Text style={styles.noteText}>
-            Note: A $25 consultation fee is required to secure your appointment
-          </Text>
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryHeader}>
+            <Text style={styles.summaryTitle}>📅 Appointment Summary</Text>
+          </View>
+          <View style={styles.summaryContent}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Service:</Text>
+              <Text style={styles.summaryValue}>{selectedService}</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Date:</Text>
+              <Text style={styles.summaryValue}>{selectedDate}</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Time:</Text>
+              <Text style={styles.summaryValue}>{selectedTime}</Text>
+            </View>
+          </View>
+          <View style={styles.feeNotice}>
+            <Text style={styles.feeText}>💳 $25 consultation fee required</Text>
+          </View>
         </View>
       )}
 
+      {/* Booking Button */}
       <TouchableOpacity 
         style={[
           styles.bookButton,
-          (!selectedDate || !selectedTime || !selectedService) && styles.bookButtonDisabled
+          (!selectedDate || !selectedTime || !selectedService) && styles.bookButtonDisabled,
+          isSubmitting && styles.bookButtonSubmitting
         ]}
         onPress={handleBooking}
-        disabled={!selectedDate || !selectedTime || !selectedService}
+        disabled={!selectedDate || !selectedTime || !selectedService || isSubmitting}
       >
-        <Text style={styles.bookButtonText}>Book Appointment</Text>
+        {isSubmitting ? (
+          <ActivityIndicator color="#ffffff" size="large" />
+        ) : (
+          <Text style={styles.bookButtonText}>Confirm Appointment</Text>
+        )}
       </TouchableOpacity>
 
-      <View style={styles.infoContainer}>
+      {/* Information Card */}
+      <View style={styles.infoCard}>
         <Text style={styles.infoTitle}>What to Expect</Text>
-        <Text style={styles.infoText}>• Professional consultation at your location</Text>
-        <Text style={styles.infoText}>• Detailed assessment of your needs</Text>
-        <Text style={styles.infoText}>• Transparent pricing discussion</Text>
-        <Text style={styles.infoText}>• Same-day service when possible</Text>
+        <View style={styles.infoList}>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoBullet}>•</Text>
+            <Text style={styles.infoText}>Professional consultation at your location</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoBullet}>•</Text>
+            <Text style={styles.infoText}>Detailed assessment of your needs</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoBullet}>•</Text>
+            <Text style={styles.infoText}>Transparent pricing discussion</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Text style={styles.infoBullet}>•</Text>
+            <Text style={styles.infoText}>Same-day service when possible</Text>
+          </View>
+        </View>
       </View>
     </ScrollView>
   );
@@ -183,83 +274,123 @@ const Appointment = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#27ae60",
-    padding: 30,
+    backgroundColor: "#1e40af",
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 32,
+    fontWeight: "800",
     color: "#ffffff",
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#ecf0f1",
-  },
-  section: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 15,
-  },
-  serviceButton: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginRight: 10,
-    minWidth: 120,
-    alignItems: "center",
-  },
-  serviceButtonActive: {
-    backgroundColor: "#27ae60",
-    borderColor: "#27ae60",
-  },
-  serviceButtonText: {
-    fontSize: 14,
-    color: "#7f8c8d",
+    marginBottom: 8,
     textAlign: "center",
   },
-  serviceButtonTextActive: {
-    color: "#ffffff",
+  subtitle: {
+    fontSize: 18,
+    color: "#e2e8f0",
+    textAlign: "center",
+    marginBottom: 20,
   },
-  dateButton: {
+  headerDecoration: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#3b82f6",
+    borderRadius: 2,
+  },
+  card: {
     backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
+    margin: 16,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cardHeader: {
+    marginBottom: 20,
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    fontSize: 16,
+    color: "#64748b",
+  },
+  serviceContainer: {
+    flexDirection: "row",
+  },
+  serviceCard: {
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
     borderRadius: 12,
-    padding: 15,
-    marginRight: 10,
-    minWidth: 70,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginRight: 12,
+    minWidth: 140,
     alignItems: "center",
   },
-  dateButtonActive: {
-    backgroundColor: "#3498db",
-    borderColor: "#3498db",
+  serviceCardActive: {
+    backgroundColor: "#1e40af",
+    borderColor: "#1e40af",
   },
-  dayText: {
-    fontSize: 12,
-    color: "#7f8c8d",
-    marginBottom: 2,
+  serviceCardText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#475569",
+    textAlign: "center",
   },
-  dayNumText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 2,
+  serviceCardTextActive: {
+    color: "#ffffff",
   },
-  monthText: {
-    fontSize: 12,
-    color: "#7f8c8d",
+  dateContainer: {
+    flexDirection: "row",
+  },
+  dateCard: {
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
+    marginRight: 12,
+    minWidth: 80,
+    alignItems: "center",
+  },
+  dateCardActive: {
+    backgroundColor: "#3b82f6",
+    borderColor: "#3b82f6",
+  },
+  dateDay: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748b",
+    marginBottom: 4,
+  },
+  dateNumber: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: "#1e293b",
+    marginBottom: 4,
+  },
+  dateMonth: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748b",
   },
   dateTextActive: {
     color: "#ffffff",
@@ -269,83 +400,147 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-  timeButton: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 15,
+  timeCard: {
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
     width: "48%",
-    marginBottom: 10,
+    marginBottom: 12,
     alignItems: "center",
   },
-  timeButtonActive: {
-    backgroundColor: "#e74c3c",
-    borderColor: "#e74c3c",
+  timeCardActive: {
+    backgroundColor: "#dc2626",
+    borderColor: "#dc2626",
   },
-  timeButtonText: {
+  timeCardText: {
     fontSize: 16,
-    color: "#7f8c8d",
+    fontWeight: "600",
+    color: "#475569",
   },
-  timeButtonTextActive: {
+  timeCardTextActive: {
     color: "#ffffff",
   },
-  summaryContainer: {
+  summaryCard: {
     backgroundColor: "#ffffff",
-    margin: 20,
+    margin: 16,
+    borderRadius: 16,
     padding: 20,
-    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
     borderLeftWidth: 4,
-    borderLeftColor: "#3498db",
+    borderLeftColor: "#3b82f6",
+  },
+  summaryHeader: {
+    marginBottom: 16,
   },
   summaryTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1e293b",
   },
-  summaryText: {
+  summaryContent: {
+    marginBottom: 16,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  summaryLabel: {
     fontSize: 16,
-    color: "#2c3e50",
-    marginBottom: 5,
+    fontWeight: "600",
+    color: "#64748b",
   },
-  noteText: {
+  summaryValue: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1e293b",
+  },
+  feeNotice: {
+    backgroundColor: "#fef3c7",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#f59e0b",
+  },
+  feeText: {
     fontSize: 14,
-    color: "#e74c3c",
-    marginTop: 10,
-    fontStyle: "italic",
+    fontWeight: "600",
+    color: "#92400e",
+    textAlign: "center",
   },
   bookButton: {
-    backgroundColor: "#27ae60",
-    margin: 20,
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: "#059669",
+    margin: 16,
+    padding: 20,
+    borderRadius: 16,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   bookButtonDisabled: {
-    backgroundColor: "#bdc3c7",
+    backgroundColor: "#d1d5db",
+  },
+  bookButtonSubmitting: {
+    backgroundColor: "#6b7280",
   },
   bookButtonText: {
     color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
   },
-  infoContainer: {
+  infoCard: {
     backgroundColor: "#ffffff",
-    margin: 20,
+    margin: 16,
+    borderRadius: 16,
     padding: 20,
-    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   infoTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 16,
+  },
+  infoList: {
+    gap: 12,
+  },
+  infoItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  infoBullet: {
     fontSize: 18,
+    color: "#3b82f6",
+    marginRight: 12,
     fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 10,
   },
   infoText: {
-    fontSize: 14,
-    color: "#7f8c8d",
-    marginBottom: 5,
+    fontSize: 16,
+    color: "#475569",
+    flex: 1,
+    lineHeight: 24,
   },
 });
 

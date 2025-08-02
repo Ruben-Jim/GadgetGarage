@@ -10,7 +10,6 @@ import { db } from "../FirebaseConfig";
 const Quote = () => {
   const router = useRouter();
   
-  {/* Old Quote form */}
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,15 +17,10 @@ const Quote = () => {
     serviceType: "",
     description: "",
     urgency: "normal",
-    
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  {/* New Quote form */}
-
-  
-  
   const serviceTypes = [
     "Custom PC Build",
     "PC Repair",
@@ -99,18 +93,26 @@ const Quote = () => {
     }
   };
 
-
-
   return (
-    <ScrollView style={styles.container}>
-      <StatusBar style="dark" />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <StatusBar style="light" />
       
+      {/* Modern Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Get Free Quote</Text>
-        <Text style={styles.subtitle}>Tell us about your project</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Get Free Quote</Text>
+          <Text style={styles.subtitle}>Tell us about your project</Text>
+          <View style={styles.headerDecoration} />
+        </View>
       </View>
 
-      <View style={styles.formContainer}>
+      {/* Contact Information Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>1. Contact Information</Text>
+          <Text style={styles.cardSubtitle}>Let us know how to reach you</Text>
+        </View>
+        
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Name *</Text>
           <TextInput
@@ -118,6 +120,7 @@ const Quote = () => {
             value={formData.name}
             onChangeText={(text) => setFormData({...formData, name: text})}
             placeholder="Your full name"
+            placeholderTextColor="#9ca3af"
           />
         </View>
 
@@ -128,6 +131,7 @@ const Quote = () => {
             value={formData.email}
             onChangeText={(text) => setFormData({...formData, email: text})}
             placeholder="your.email@example.com"
+            placeholderTextColor="#9ca3af"
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -140,31 +144,44 @@ const Quote = () => {
             value={formData.phone}
             onChangeText={(text) => setFormData({...formData, phone: text})}
             placeholder="(555) 123-4567"
+            placeholderTextColor="#9ca3af"
             keyboardType="phone-pad"
           />
         </View>
+      </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Service Type</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.serviceTypeContainer}>
-            {serviceTypes.map((service) => (
-              <TouchableOpacity
-                key={service}
-                style={[
-                  styles.serviceTypeButton,
-                  formData.serviceType === service && styles.serviceTypeButtonActive
-                ]}
-                onPress={() => setFormData({...formData, serviceType: service})}
-              >
-                <Text style={[
-                  styles.serviceTypeText,
-                  formData.serviceType === service && styles.serviceTypeTextActive
-                ]}>
-                  {service}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+      {/* Service Type Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>2. Service Type</Text>
+          <Text style={styles.cardSubtitle}>What service do you need?</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.serviceTypeContainer}>
+          {serviceTypes.map((service) => (
+            <TouchableOpacity
+              key={service}
+              style={[
+                styles.serviceTypeButton,
+                formData.serviceType === service && styles.serviceTypeButtonActive
+              ]}
+              onPress={() => setFormData({...formData, serviceType: service})}
+            >
+              <Text style={[
+                styles.serviceTypeText,
+                formData.serviceType === service && styles.serviceTypeTextActive
+              ]}>
+                {service}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Project Details Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>3. Project Details</Text>
+          <Text style={styles.cardSubtitle}>Tell us about your requirements</Text>
         </View>
 
         <View style={styles.inputGroup}>
@@ -174,13 +191,14 @@ const Quote = () => {
             value={formData.description}
             onChangeText={(text) => setFormData({...formData, description: text})}
             placeholder="Describe your project, current issues, or requirements..."
+            placeholderTextColor="#9ca3af"
             multiline
             numberOfLines={4}
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Urgency</Text>
+          <Text style={styles.label}>Urgency Level</Text>
           <View style={styles.urgencyContainer}>
             {["low", "normal", "high", "urgent"].map((level) => (
               <TouchableOpacity
@@ -201,19 +219,30 @@ const Quote = () => {
             ))}
           </View>
         </View>
+      </View>
 
-        <TouchableOpacity 
-          style={isSubmitting ? styles.submitButtonDisabled : styles.submitButton} 
-          onPress={handleSubmit} 
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.submitButtonText}>Submit Quote Request</Text>
-          )}
-        </TouchableOpacity>
+      {/* Submit Button */}
+      <TouchableOpacity 
+        style={[
+          styles.submitButton,
+          isSubmitting && styles.submitButtonDisabled
+        ]} 
+        onPress={handleSubmit} 
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <ActivityIndicator color="#ffffff" size="large" />
+        ) : (
+          <Text style={styles.submitButtonText}>Submit Quote Request</Text>
+        )}
+      </TouchableOpacity>
 
+      {/* Alternative Contact Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Need Immediate Help?</Text>
+          <Text style={styles.cardSubtitle}>Message us directly for quick responses</Text>
+        </View>
         <TouchableOpacity 
           style={styles.messageButton}
           onPress={() => router.push('/messages')}
@@ -228,58 +257,95 @@ const Quote = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8fafc",
   },
   header: {
     backgroundColor: "#3498db",
-    padding: 30,
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 32,
+    fontWeight: "800",
     color: "#ffffff",
-    marginBottom: 5,
+    marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#ecf0f1",
+    fontSize: 18,
+    color: "#e2e8f0",
+    textAlign: "center",
+    marginBottom: 20,
   },
-  formContainer: {
+  headerDecoration: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#60a5fa",
+    borderRadius: 2,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    margin: 16,
+    borderRadius: 16,
     padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cardHeader: {
+    marginBottom: 20,
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    fontSize: 16,
+    color: "#64748b",
   },
   inputGroup: {
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#2c3e50",
+    fontWeight: "600",
+    color: "#1e293b",
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 15,
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
   },
   textArea: {
-    height: 100,
+    height: 120,
     textAlignVertical: "top",
   },
   serviceTypeContainer: {
     flexDirection: "row",
   },
   serviceTypeButton: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
     borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    marginRight: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginRight: 12,
   },
   serviceTypeButtonActive: {
     backgroundColor: "#3498db",
@@ -287,7 +353,8 @@ const styles = StyleSheet.create({
   },
   serviceTypeText: {
     fontSize: 14,
-    color: "#7f8c8d",
+    fontWeight: "600",
+    color: "#475569",
   },
   serviceTypeTextActive: {
     color: "#ffffff",
@@ -295,58 +362,70 @@ const styles = StyleSheet.create({
   urgencyContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 8,
   },
   urgencyButton: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
     padding: 12,
-    marginHorizontal: 2,
     alignItems: "center",
   },
   urgencyButtonActive: {
-    backgroundColor: "#e74c3c",
-    borderColor: "#e74c3c",
+    backgroundColor: "#dc2626",
+    borderColor: "#dc2626",
   },
   urgencyText: {
     fontSize: 14,
-    color: "#7f8c8d",
+    fontWeight: "600",
+    color: "#475569",
   },
   urgencyTextActive: {
     color: "#ffffff",
   },
   submitButton: {
-    backgroundColor: "#27ae60",
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: "#059669",
+    margin: 16,
+    padding: 20,
+    borderRadius: 16,
     alignItems: "center",
-    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   submitButtonDisabled: {
-    backgroundColor: "#95a5a6",
-    padding: 18,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 10,
+    backgroundColor: "#6b7280",
   },
   submitButtonText: {
     color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
   },
   messageButton: {
-    backgroundColor: "#9b59b6",
-    padding: 15,
+    backgroundColor: "#7c3aed",
+    padding: 16,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   messageButtonText: {
     color: "#ffffff",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
   },
 });
 

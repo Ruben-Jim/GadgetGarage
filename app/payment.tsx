@@ -11,12 +11,12 @@ const Payment = () => {
   const [description, setDescription] = useState<string>("");
 
   const paymentMethods = [
-    { id: "card", name: "Credit/Debit Card", icon: "💳" },
-    { id: "venmo", name: "Venmo", icon: "📱" },
-    { id: "cashapp", name: "Cash App", icon: "💰" },
-    { id: "zelle", name: "Zelle", icon: "🏦" },
-    { id: "paypal", name: "PayPal", icon: "🅿️" },
-    { id: "cash", name: "Cash", icon: "💵" }
+    { id: "card", name: "Credit/Debit Card", icon: "💳", color: "#1e40af" },
+    { id: "venmo", name: "Venmo", icon: "📱", color: "#059669" },
+    { id: "cashapp", name: "Cash App", icon: "💰", color: "#059669" },
+    { id: "zelle", name: "Zelle", icon: "🏦", color: "#7c3aed" },
+    { id: "paypal", name: "PayPal", icon: "🅿️", color: "#1e40af" },
+    { id: "cash", name: "Cash", icon: "💵", color: "#059669" }
   ];
 
   const quickAmounts = ["25", "50", "100", "150", "200", "300"];
@@ -40,16 +40,24 @@ const Payment = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <StatusBar style="dark" />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <StatusBar style="light" />
       
+      {/* Modern Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Payment</Text>
-        <Text style={styles.subtitle}>Secure payment processing</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Payment</Text>
+          <Text style={styles.subtitle}>Secure payment processing</Text>
+          <View style={styles.headerDecoration} />
+        </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Payment Amount</Text>
+      {/* Amount Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Payment Amount</Text>
+          <Text style={styles.cardSubtitle}>Enter the amount you'd like to pay</Text>
+        </View>
         <View style={styles.amountContainer}>
           <Text style={styles.dollarSign}>$</Text>
           <TextInput
@@ -57,6 +65,7 @@ const Payment = () => {
             value={amount}
             onChangeText={setAmount}
             placeholder="0.00"
+            placeholderTextColor="#9ca3af"
             keyboardType="numeric"
           />
         </View>
@@ -83,19 +92,28 @@ const Payment = () => {
         </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Payment Description</Text>
+      {/* Description Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Payment Description</Text>
+          <Text style={styles.cardSubtitle}>Optional details about this payment</Text>
+        </View>
         <TextInput
           style={styles.descriptionInput}
           value={description}
           onChangeText={setDescription}
           placeholder="Service description (optional)"
+          placeholderTextColor="#9ca3af"
           multiline
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Payment Method</Text>
+      {/* Payment Method Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Payment Method</Text>
+          <Text style={styles.cardSubtitle}>Choose your preferred payment option</Text>
+        </View>
         <View style={styles.paymentMethodsContainer}>
           {paymentMethods.map((method) => (
             <TouchableOpacity
@@ -106,7 +124,9 @@ const Payment = () => {
               ]}
               onPress={() => setPaymentMethod(method.id)}
             >
-              <Text style={styles.paymentMethodIcon}>{method.icon}</Text>
+              <View style={[styles.paymentMethodIconContainer, { backgroundColor: method.color + '20' }]}>
+                <Text style={styles.paymentMethodIcon}>{method.icon}</Text>
+              </View>
               <Text style={[
                 styles.paymentMethodText,
                 paymentMethod === method.id && styles.paymentMethodTextActive
@@ -118,65 +138,79 @@ const Payment = () => {
         </View>
       </View>
 
+      {/* Card Information Card */}
       {paymentMethod === "card" && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Card Information</Text>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Card Information</Text>
+            <Text style={styles.cardSubtitle}>Enter your card details securely</Text>
+          </View>
           <View style={styles.cardForm}>
             <TextInput
               style={styles.cardInput}
               placeholder="Card Number"
+              placeholderTextColor="#9ca3af"
               keyboardType="numeric"
             />
             <View style={styles.cardRow}>
               <TextInput
                 style={[styles.cardInput, styles.cardInputSmall]}
                 placeholder="MM/YY"
+                placeholderTextColor="#9ca3af"
                 keyboardType="numeric"
               />
               <TextInput
                 style={[styles.cardInput, styles.cardInputSmall]}
                 placeholder="CVV"
+                placeholderTextColor="#9ca3af"
                 keyboardType="numeric"
               />
             </View>
             <TextInput
               style={styles.cardInput}
               placeholder="Cardholder Name"
+              placeholderTextColor="#9ca3af"
             />
           </View>
         </View>
       )}
 
+      {/* Payment Summary Card */}
       {amount && paymentMethod && (
-        <View style={styles.summaryContainer}>
-          <Text style={styles.summaryTitle}>Payment Summary</Text>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Amount:</Text>
-            <Text style={styles.summaryValue}>${amount}</Text>
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryHeader}>
+            <Text style={styles.summaryTitle}>📋 Payment Summary</Text>
           </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Method:</Text>
-            <Text style={styles.summaryValue}>
-              {paymentMethods.find(method => method.id === paymentMethod)?.name}
-            </Text>
-          </View>
-          {description && (
+          <View style={styles.summaryContent}>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Description:</Text>
-              <Text style={styles.summaryValue}>{description}</Text>
+              <Text style={styles.summaryLabel}>Amount:</Text>
+              <Text style={styles.summaryValue}>${amount}</Text>
             </View>
-          )}
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Processing Fee:</Text>
-            <Text style={styles.summaryValue}>$0.00</Text>
-          </View>
-          <View style={[styles.summaryRow, styles.totalRow]}>
-            <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalValue}>${amount}</Text>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Method:</Text>
+              <Text style={styles.summaryValue}>
+                {paymentMethods.find(method => method.id === paymentMethod)?.name}
+              </Text>
+            </View>
+            {description && (
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Description:</Text>
+                <Text style={styles.summaryValue}>{description}</Text>
+              </View>
+            )}
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Processing Fee:</Text>
+              <Text style={styles.summaryValue}>$0.00</Text>
+            </View>
+            <View style={[styles.summaryRow, styles.totalRow]}>
+              <Text style={styles.totalLabel}>Total:</Text>
+              <Text style={styles.totalValue}>${amount}</Text>
+            </View>
           </View>
         </View>
       )}
 
+      {/* Payment Button */}
       <TouchableOpacity 
         style={[
           styles.payButton,
@@ -190,8 +224,12 @@ const Payment = () => {
         </Text>
       </TouchableOpacity>
 
-      <View style={styles.securityContainer}>
-        <Text style={styles.securityTitle}>🔒 Secure Payment</Text>
+      {/* Security Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>🔒 Secure Payment</Text>
+          <Text style={styles.cardSubtitle}>Your data is protected with industry-standard security</Text>
+        </View>
         <Text style={styles.securityText}>
           Your payment information is encrypted and secure. We use industry-standard security measures to protect your data.
         </Text>
@@ -203,217 +241,268 @@ const Payment = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#e74c3c",
-    padding: 30,
+    backgroundColor: "#dc2626",
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 32,
+    fontWeight: "800",
     color: "#ffffff",
-    marginBottom: 5,
+    marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#ecf0f1",
+    fontSize: 18,
+    color: "#e2e8f0",
+    textAlign: "center",
+    marginBottom: 20,
   },
-  section: {
+  headerDecoration: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#ef4444",
+    borderRadius: 2,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    margin: 16,
+    borderRadius: 16,
     padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 15,
+  cardHeader: {
+    marginBottom: 20,
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    fontSize: 16,
+    color: "#64748b",
   },
   amountContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f8fafc",
     borderWidth: 2,
-    borderColor: "#27ae60",
+    borderColor: "#059669",
     borderRadius: 12,
-    paddingHorizontal: 15,
-    marginBottom: 15,
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   dollarSign: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#27ae60",
-    marginRight: 5,
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#059669",
+    marginRight: 8,
   },
   amountInput: {
     flex: 1,
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    paddingVertical: 15,
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#1e293b",
+    paddingVertical: 16,
   },
   quickAmountLabel: {
-    fontSize: 14,
-    color: "#7f8c8d",
-    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#64748b",
+    marginBottom: 12,
   },
   quickAmountsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    gap: 8,
   },
   quickAmountButton: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
     width: "30%",
-    marginBottom: 10,
     alignItems: "center",
   },
   quickAmountButtonActive: {
-    backgroundColor: "#27ae60",
-    borderColor: "#27ae60",
+    backgroundColor: "#059669",
+    borderColor: "#059669",
   },
   quickAmountText: {
     fontSize: 16,
-    color: "#7f8c8d",
+    fontWeight: "600",
+    color: "#475569",
   },
   quickAmountTextActive: {
     color: "#ffffff",
   },
   descriptionInput: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 15,
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
-    height: 80,
+    height: 100,
     textAlignVertical: "top",
   },
   paymentMethodsContainer: {
-    gap: 10,
+    gap: 12,
   },
   paymentMethodButton: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
     borderRadius: 12,
-    padding: 15,
+    padding: 16,
     flexDirection: "row",
     alignItems: "center",
   },
   paymentMethodButtonActive: {
-    backgroundColor: "#e74c3c",
-    borderColor: "#e74c3c",
+    backgroundColor: "#dc2626",
+    borderColor: "#dc2626",
+  },
+  paymentMethodIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
   },
   paymentMethodIcon: {
     fontSize: 24,
-    marginRight: 15,
   },
   paymentMethodText: {
     fontSize: 16,
-    color: "#2c3e50",
+    fontWeight: "600",
+    color: "#475569",
+    flex: 1,
   },
   paymentMethodTextActive: {
     color: "#ffffff",
   },
   cardForm: {
-    gap: 15,
+    gap: 16,
   },
   cardInput: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 15,
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
   },
   cardRow: {
     flexDirection: "row",
-    gap: 15,
+    gap: 16,
   },
   cardInputSmall: {
     flex: 1,
   },
-  summaryContainer: {
+  summaryCard: {
     backgroundColor: "#ffffff",
-    margin: 20,
+    margin: 16,
+    borderRadius: 16,
     padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: "#059669",
+  },
+  summaryHeader: {
+    marginBottom: 16,
   },
   summaryTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 15,
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1e293b",
+  },
+  summaryContent: {
+    gap: 12,
   },
   summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    alignItems: "center",
   },
   summaryLabel: {
     fontSize: 16,
-    color: "#7f8c8d",
+    fontWeight: "600",
+    color: "#64748b",
   },
   summaryValue: {
     fontSize: 16,
-    color: "#2c3e50",
+    fontWeight: "700",
+    color: "#1e293b",
   },
   totalRow: {
     borderTopWidth: 1,
-    borderTopColor: "#ddd",
-    paddingTop: 10,
-    marginTop: 10,
+    borderTopColor: "#e2e8f0",
+    paddingTop: 12,
+    marginTop: 8,
   },
   totalLabel: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#2c3e50",
+    fontWeight: "700",
+    color: "#1e293b",
   },
   totalValue: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#27ae60",
+    fontWeight: "700",
+    color: "#059669",
   },
   payButton: {
-    backgroundColor: "#27ae60",
-    margin: 20,
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: "#059669",
+    margin: 16,
+    padding: 20,
+    borderRadius: 16,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   payButtonDisabled: {
-    backgroundColor: "#bdc3c7",
+    backgroundColor: "#d1d5db",
   },
   payButtonText: {
     color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  securityContainer: {
-    backgroundColor: "#ffffff",
-    margin: 20,
-    padding: 20,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  securityTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#27ae60",
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "700",
   },
   securityText: {
-    fontSize: 14,
-    color: "#7f8c8d",
-    textAlign: "center",
-    lineHeight: 20,
+    fontSize: 16,
+    color: "#475569",
+    lineHeight: 24,
   },
 });
 

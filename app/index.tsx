@@ -8,25 +8,31 @@ const Index = () => {
   const router = useRouter();
 
   const services = [
-    { id: 1, title: "PC Building", icon: "🖥️", description: "Custom PC builds tailored to your needs" },
-    { id: 2, title: "PC Repair", icon: "🔧", description: "Expert diagnosis and repair services" },
-    { id: 3, title: "Parts Installation", icon: "⚡", description: "Professional hardware installation" },
-    { id: 4, title: "Upgrades", icon: "📈", description: "Boost your PC's performance" },
+    { id: 1, title: "PC Building", icon: "🖥️", description: "Custom PC builds tailored to your needs", color: "#1e40af" },
+    { id: 2, title: "PC Repair", icon: "🔧", description: "Expert diagnosis and repair services", color: "#dc2626" },
+    { id: 3, title: "Parts Installation", icon: "⚡", description: "Professional hardware installation", color: "#059669" },
+    { id: 4, title: "Upgrades", icon: "📈", description: "Boost your PC's performance", color: "#7c3aed" },
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      <StatusBar style="dark" />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <StatusBar style="light" />
       
-      {/* Header */}
+      {/* Modern Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Gadget Garage</Text>
-        <Text style={styles.subtitle}>Professional PC Services</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Gadget Garage</Text>
+          <Text style={styles.subtitle}>Professional PC Services</Text>
+          <View style={styles.headerDecoration} />
+        </View>
       </View>
 
-      {/* Services Grid */}
-      <View style={styles.servicesContainer}>
-        <Text style={styles.sectionTitle}>Our Services</Text>
+      {/* Services Section */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Our Services</Text>
+          <Text style={styles.cardSubtitle}>Expert solutions for all your PC needs</Text>
+        </View>
         <View style={styles.servicesGrid}>
           {services.map((service) => (
             <TouchableOpacity 
@@ -34,7 +40,9 @@ const Index = () => {
               style={styles.serviceCard}
               onPress={() => router.push('/services')}
             >
-              <Text style={styles.serviceIcon}>{service.icon}</Text>
+              <View style={[styles.serviceIconContainer, { backgroundColor: service.color + '20' }]}>
+                <Text style={styles.serviceIcon}>{service.icon}</Text>
+              </View>
               <Text style={styles.serviceTitle}>{service.title}</Text>
               <Text style={styles.serviceDescription}>{service.description}</Text>
             </TouchableOpacity>
@@ -42,31 +50,72 @@ const Index = () => {
         </View>
       </View>
 
-      {/* Quick Actions */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.primaryButton]}
-          onPress={() => router.push('/quote')}
-        >
-          <Text style={styles.actionButtonText}>Get Free Quote</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.secondaryButton]}
-          onPress={() => router.push('/appointment')}
-        >
-          <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>Book Appointment</Text>
-        </TouchableOpacity>
+      {/* Quick Actions Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Get Started</Text>
+          <Text style={styles.cardSubtitle}>Choose how you'd like to work with us</Text>
+        </View>
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity 
+            style={styles.primaryActionButton}
+            onPress={() => router.push('/quote')}
+          >
+            <Text style={styles.primaryActionText}>Get Free Quote</Text>
+            <Text style={styles.primaryActionSubtext}>Tell us about your project</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.secondaryActionButton}
+            onPress={() => router.push('/appointment')}
+          >
+            <Text style={styles.secondaryActionText}>Book Appointment</Text>
+            <Text style={styles.secondaryActionSubtext}>Schedule in-person visit</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* About Section */}
-      <View style={styles.aboutContainer}>
-        <Text style={styles.sectionTitle}>About Gadget Garage</Text>
-        <Text style={styles.aboutText}>
-          Professional PC building, repair, and upgrade services. 
-          We provide expert consultation, quality parts installation, 
-          and reliable support for all your computer needs.
-        </Text>
+      {/* About Section Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>About Gadget Garage</Text>
+          <Text style={styles.cardSubtitle}>Your trusted PC experts</Text>
+        </View>
+        <View style={styles.aboutContent}>
+          <Text style={styles.aboutText}>
+            Professional PC building, repair, and upgrade services. 
+            We provide expert consultation, quality parts installation, 
+            and reliable support for all your computer needs.
+          </Text>
+          <View style={styles.featuresList}>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureBullet}>✓</Text>
+              <Text style={styles.featureText}>Expert consultation</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureBullet}>✓</Text>
+              <Text style={styles.featureText}>Quality parts installation</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureBullet}>✓</Text>
+              <Text style={styles.featureText}>Reliable support</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Contact Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Need Help?</Text>
+          <Text style={styles.cardSubtitle}>We're here to assist you</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.contactButton}
+          onPress={() => router.push('/messages')}
+        >
+          <Text style={styles.contactButtonText}>💬 Message Us</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -75,32 +124,62 @@ const Index = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#2c3e50",
-    padding: 50,
+    backgroundColor: "#1e40af",
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     alignItems: "center",
-    
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
+    fontSize: 36,
+    fontWeight: "800",
     color: "#ffffff",
-    marginBottom: 5,
+    marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#ecf0f1",
+    fontSize: 18,
+    color: "#e2e8f0",
+    textAlign: "center",
+    marginBottom: 20,
   },
-  servicesContainer: {
+  headerDecoration: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#3b82f6",
+    borderRadius: 2,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    margin: 16,
+    borderRadius: 16,
     padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  sectionTitle: {
+  cardHeader: {
+    marginBottom: 20,
+  },
+  cardTitle: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 15,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    fontSize: 16,
+    color: "#64748b",
   },
   servicesGrid: {
     flexDirection: "row",
@@ -108,69 +187,134 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   serviceCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 16,
+    width: "48%",
+    marginBottom: 12,
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+  },
+  serviceIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  serviceIcon: {
+    fontSize: 28,
+  },
+  serviceTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 6,
+    textAlign: "center",
+  },
+  serviceDescription: {
+    fontSize: 13,
+    color: "#64748b",
+    textAlign: "center",
+    lineHeight: 18,
+  },
+  actionsContainer: {
+    gap: 12,
+  },
+  primaryActionButton: {
+    backgroundColor: "#059669",
     borderRadius: 12,
     padding: 20,
-    width: "48%",
-    marginBottom: 15,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  serviceIcon: {
-    fontSize: 40,
-    marginBottom: 10,
-  },
-  serviceTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginBottom: 5,
-    textAlign: "center",
-  },
-  serviceDescription: {
-    fontSize: 12,
-    color: "#7f8c8d",
-    textAlign: "center",
-  },
-  actionsContainer: {
-    padding: 20,
-    gap: 15,
-  },
-  actionButton: {
-    padding: 18,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  primaryButton: {
-    backgroundColor: "#3498db",
-  },
-  secondaryButton: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: "#3498db",
-  },
-  actionButtonText: {
+  primaryActionText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "700",
     color: "#ffffff",
+    marginBottom: 4,
   },
-  secondaryButtonText: {
-    color: "#3498db",
+  primaryActionSubtext: {
+    fontSize: 14,
+    color: "#d1fae5",
   },
-  aboutContainer: {
-    padding: 20,
-    backgroundColor: "#ffffff",
-    margin: 20,
+  secondaryActionButton: {
+    backgroundColor: "#1e40af",
     borderRadius: 12,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  secondaryActionText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
+    marginBottom: 4,
+  },
+  secondaryActionSubtext: {
+    fontSize: 14,
+    color: "#dbeafe",
+  },
+  aboutContent: {
+    gap: 16,
   },
   aboutText: {
     fontSize: 16,
-    color: "#7f8c8d",
+    color: "#475569",
     lineHeight: 24,
+  },
+  featuresList: {
+    gap: 8,
+  },
+  featureItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  featureBullet: {
+    fontSize: 16,
+    color: "#059669",
+    marginRight: 12,
+    fontWeight: "bold",
+  },
+  featureText: {
+    fontSize: 15,
+    color: "#475569",
+    flex: 1,
+  },
+  contactButton: {
+    backgroundColor: "#7c3aed",
+    borderRadius: 12,
+    padding: 18,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  contactButtonText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
   },
 });
 

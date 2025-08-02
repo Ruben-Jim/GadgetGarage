@@ -54,14 +54,19 @@ const Messages = () => {
       style={styles.container} 
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       
+      {/* Modern Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Messages</Text>
-        <Text style={styles.subtitle}>Chat with Gadget Garage</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Messages</Text>
+          <Text style={styles.subtitle}>Chat with Gadget Garage</Text>
+          <View style={styles.headerDecoration} />
+        </View>
       </View>
 
-      <ScrollView style={styles.messagesContainer}>
+      {/* Messages Container */}
+      <ScrollView style={styles.messagesContainer} showsVerticalScrollIndicator={false}>
         {messages.map((message) => (
           <View
             key={message.id}
@@ -86,26 +91,9 @@ const Messages = () => {
         ))}
       </ScrollView>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          value={newMessage}
-          onChangeText={setNewMessage}
-          placeholder="Type your message..."
-          multiline
-          maxLength={500}
-        />
-        <TouchableOpacity 
-          style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
-          onPress={sendMessage}
-          disabled={!newMessage.trim()}
-        >
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.quickActions}>
-        <Text style={styles.quickActionsTitle}>Quick Actions:</Text>
+      {/* Quick Actions Card */}
+      <View style={styles.quickActionsCard}>
+        <Text style={styles.quickActionsTitle}>Quick Questions</Text>
         <View style={styles.quickActionButtons}>
           <TouchableOpacity
             style={styles.quickActionButton}
@@ -127,6 +115,28 @@ const Messages = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Input Container */}
+      <View style={styles.inputContainer}>
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={styles.textInput}
+            value={newMessage}
+            onChangeText={setNewMessage}
+            placeholder="Type your message..."
+            placeholderTextColor="#9ca3af"
+            multiline
+            maxLength={500}
+          />
+          <TouchableOpacity 
+            style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
+            onPress={sendMessage}
+            disabled={!newMessage.trim()}
+          >
+            <Text style={styles.sendButtonText}>Send</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -134,122 +144,172 @@ const Messages = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#9b59b6",
-    padding: 30,
+    backgroundColor: "#7c3aed",
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 32,
+    fontWeight: "800",
     color: "#ffffff",
-    marginBottom: 5,
+    marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#ecf0f1",
+    fontSize: 18,
+    color: "#e2e8f0",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  headerDecoration: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#a855f7",
+    borderRadius: 2,
   },
   messagesContainer: {
     flex: 1,
-    padding: 15,
+    padding: 16,
   },
   messageContainer: {
-    marginBottom: 15,
-    maxWidth: "80%",
-    padding: 12,
-    borderRadius: 18,
+    marginBottom: 16,
+    maxWidth: "85%",
+    padding: 16,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   customerMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#3498db",
+    backgroundColor: "#1e40af",
+    borderBottomRightRadius: 6,
   },
   businessMessage: {
     alignSelf: "flex-start",
     backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: "#e2e8f0",
+    borderBottomLeftRadius: 6,
   },
   messageText: {
     fontSize: 16,
-    lineHeight: 20,
+    lineHeight: 22,
+    fontWeight: "500",
   },
   customerMessageText: {
     color: "#ffffff",
   },
   businessMessageText: {
-    color: "#2c3e50",
+    color: "#1e293b",
   },
   timestamp: {
     fontSize: 12,
-    marginTop: 5,
+    marginTop: 8,
+    fontWeight: "500",
   },
   customerTimestamp: {
-    color: "#ecf0f1",
+    color: "#dbeafe",
     textAlign: "right",
   },
   businessTimestamp: {
-    color: "#95a5a6",
+    color: "#64748b",
   },
-  inputContainer: {
-    flexDirection: "row",
-    padding: 15,
+  quickActionsCard: {
     backgroundColor: "#ffffff",
-    alignItems: "flex-end",
-  },
-  textInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginRight: 10,
-    maxHeight: 100,
-    fontSize: 16,
-  },
-  sendButton: {
-    backgroundColor: "#3498db",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
-  sendButtonDisabled: {
-    backgroundColor: "#bdc3c7",
-  },
-  sendButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  quickActions: {
-    backgroundColor: "#ffffff",
-    padding: 15,
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
+    margin: 16,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   quickActionsTitle: {
-    fontSize: 14,
-    color: "#7f8c8d",
-    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 16,
   },
   quickActionButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 8,
   },
   quickActionButton: {
-    backgroundColor: "#ecf0f1",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 15,
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
     flex: 1,
-    marginHorizontal: 2,
     alignItems: "center",
   },
   quickActionText: {
-    fontSize: 12,
-    color: "#2c3e50",
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#475569",
+  },
+  inputContainer: {
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#e2e8f0",
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 12,
+  },
+  textInput: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    maxHeight: 120,
+    fontSize: 16,
+    backgroundColor: "#f8fafc",
+  },
+  sendButton: {
+    backgroundColor: "#1e40af",
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 24,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sendButtonDisabled: {
+    backgroundColor: "#d1d5db",
+  },
+  sendButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
 
