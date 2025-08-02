@@ -8,7 +8,7 @@ SplashScreen.preventAutoHideAsync();
 
 interface RootLayoutProps {}
 
-const RootLayout: React.FC<RootLayoutProps> = () => {
+const RootLayout = () => {
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -61,21 +61,21 @@ const RootLayout: React.FC<RootLayoutProps> = () => {
       <Stack.Screen
         name="messages"
         options={{
-          title: "Back",
+          title: "Chat",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="appointment"
         options={{
-          title: "Menu",
+          title: "Appointment",
           headerShown: true,
         }}
       />
       <Stack.Screen
         name="payment"
         options={{
-          title: "Back",
+          title: "Payment",
           headerShown: true
         }}
       />

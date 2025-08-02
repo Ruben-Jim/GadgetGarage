@@ -2,9 +2,10 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import 'firebase/database';
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { db } from "../FirebaseConfig";
 
 const Quote = () => {
   const router = useRouter();
@@ -20,6 +21,8 @@ const Quote = () => {
     
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   {/* New Quote form */}
 
   
@@ -32,20 +35,68 @@ const Quote = () => {
     "Other"
   ];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.name || !formData.email || !formData.description) {
       Alert.alert("Error", "Please fill in all required fields");
       return;
     }
+
+    setIsSubmitting(true);
     
-    Alert.alert(
-      "Quote Submitted",
-      "Thank you! We'll review your request and send you a free quote within 24 hours. You can also message us for any questions.",
-      [
-        { text: "Message Us", onPress: () => router.push('/messages') },
-        { text: "OK", style: "default" }
-      ]
-    );
+    try {
+      // Add document to Firestore
+      const docRef = await addDoc(collection(db, "quotes"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+        status: "pending"
+      });
+
+      console.log("Quote submitted with ID: ", docRef.id);
+      
+      Alert.alert(
+        "Quote Submitted Successfully!",
+        "Thank you! We'll review your request and send you a free quote within 24 hours. You can also message us for any questions.",
+        [
+          { text: "Message Us", onPress: () => router.push('/messages') },
+          { text: "OK", style: "default" }
+        ]
+      );
+
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        serviceType: "",
+        description: "",
+        urgency: "normal",
+      });
+
+    } catch (error: any) {
+      console.error("Error submitting quote: ", error);
+      
+      let errorMessage = "There was an error submitting your quote. Please try again or contact us directly.";
+      
+      // Check for specific Firebase errors
+      if (error.code === 'permission-denied') {
+        errorMessage = "Permission denied. Please check your Firebase configuration and security rules.";
+      } else if (error.code === 'unavailable') {
+        errorMessage = "Service temporarily unavailable. Please check your internet connection and try again.";
+      } else if (error.code === 'unauthenticated') {
+        errorMessage = "Authentication required. Please check your Firebase configuration.";
+      }
+      
+      Alert.alert(
+        "Submission Error",
+        errorMessage,
+        [
+          { text: "Message Us", onPress: () => router.push('/messages') },
+          { text: "OK", style: "default" }
+        ]
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
 
@@ -151,8 +202,16 @@ const Quote = () => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit Quote Request</Text>
+        <TouchableOpacity 
+          style={isSubmitting ? styles.submitButtonDisabled : styles.submitButton} 
+          onPress={handleSubmit} 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.submitButtonText}>Submit Quote Request</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -260,6 +319,13 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: "#27ae60",
+    padding: 18,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  submitButtonDisabled: {
+    backgroundColor: "#95a5a6",
     padding: 18,
     borderRadius: 12,
     alignItems: "center",
