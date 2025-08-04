@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#059669",
-    paddingTop: 60,
+    paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
   },
@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: "absolute",
-    top: 50,
-    left: 16,
+    top: 60,
+    left: 15,
     zIndex: 10,
   },
   servicesContainer: {

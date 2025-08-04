@@ -1,11 +1,20 @@
 
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import NotificationPopup from "../components/NotificationPopup";
 
 const Index = () => {
   const router = useRouter();
+  const [showNotification, setShowNotification] = useState(true);
+
+  // Show notification on first visit
+  useEffect(() => {
+    // For web, we'll show the notification every time for now
+    // In a real app, you'd use AsyncStorage or similar for persistence
+    setShowNotification(true);
+  }, []);
 
   const services = [
     { id: 1, title: "PC Building", icon: "🖥️", description: "Custom PC builds tailored to your needs", color: "#1e40af" },
@@ -15,8 +24,16 @@ const Index = () => {
   ];
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <StatusBar style="light" />
+    <View style={styles.container}>
+      {showNotification && (
+        <NotificationPopup 
+          message="💡 Tip: Swipe from the left edge to go back to previous pages"
+          duration={5000}
+          onClose={() => setShowNotification(false)}
+        />
+      )}
+      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <StatusBar style="light" />
       
       {/* Modern Header */}
       <View style={styles.header}>
@@ -117,7 +134,8 @@ const Index = () => {
           <Text style={styles.contactButtonText}>💬 Message Us</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -126,9 +144,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8fafc",
   },
+  scrollContainer: {
+    flex: 1,
+  },
   header: {
     backgroundColor: "#1e40af",
-    paddingTop: 60,
+    paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
   },

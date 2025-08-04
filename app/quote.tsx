@@ -1,4 +1,5 @@
 
+import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import 'firebase/database';
@@ -104,6 +105,16 @@ const Quote = () => {
           <Text style={styles.subtitle}>Tell us about your project</Text>
           <View style={styles.headerDecoration} />
         </View>
+      </View>
+
+      {/* Custom Back Button */}
+      <View style={styles.backButtonContainer}>
+        <BackButton 
+      // variant = default, minimal, floating
+          variant="minimal" 
+          color="#059669" 
+          title="Home"
+        />
       </View>
 
       {/* Contact Information Card */}
@@ -261,7 +272,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#3498db",
-    paddingTop: 60,
+    paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
   },
@@ -286,6 +297,12 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: "#60a5fa",
     borderRadius: 2,
+  },
+  backButtonContainer: {
+    position: "absolute",
+    top: 50,
+    left: 16,
+    zIndex: 10,
   },
   card: {
     backgroundColor: "#ffffff",

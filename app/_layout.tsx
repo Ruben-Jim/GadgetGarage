@@ -55,28 +55,28 @@ const RootLayout = () => {
         name="quote"
         options={{
           title: "Get Quote",
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="messages"
         options={{
           title: "Messages",
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="appointment"
         options={{
           title: "Book Appointment",
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="payment"
         options={{
           title: "Payment",
-          headerShown: true
+          headerShown: false
         }}
       />
     </Stack>
