@@ -114,9 +114,9 @@ const Appointment = () => {
       <View style={styles.backButtonContainer}>
         <BackButton
         // variant = default, minimal, flating
-        variant="minimal"
+        variant="floating"
         color="#1e40af"
-        title="Home"
+        title=""
         />
 
       </View>
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: "absolute",
-    top: 68,
+    top: 58,
     left: 15,
     zIndex: 10,
   },
