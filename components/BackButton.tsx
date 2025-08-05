@@ -108,12 +108,12 @@ const styles = StyleSheet.create({
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 6,
   },
   iconContainer: {
-    marginRight: 8,
+    marginRight: 0,
   },
   icon: {
     fontSize: 20,
