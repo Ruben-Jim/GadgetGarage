@@ -2,12 +2,18 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import NotificationPopup from "../components/NotificationPopup";
 
 const Index = () => {
   const router = useRouter();
   const [showNotification, setShowNotification] = useState(true);
+  const { width, height } = Dimensions.get('window');
+
+  // Determine device type for responsive design
+  const isDesktop = width > 1024;
+  const isTablet = width > 768 && width <= 1024;
+  const isMobile = width <= 768;
 
   // Show notification on first visit
   useEffect(() => {
@@ -35,14 +41,34 @@ const Index = () => {
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <StatusBar style="light" />
       
-      {/* Modern Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>Gadget Garage</Text>
-          <Text style={styles.subtitle}>Professional PC Services</Text>
-          <View style={styles.headerDecoration} />
-        </View>
-      </View>
+            {/* Modern Header with Background Image */}
+      <ImageBackground
+        source={require("../assets/images/header.jpg")}
+        style={[
+          styles.header,
+          isDesktop && styles.headerDesktop,
+          isTablet && styles.headerTablet,
+          isMobile && styles.headerMobile
+        ]}
+        resizeMode="cover"
+        imageStyle={styles.headerImage}
+      >
+          <View style={styles.headerContent}>
+            <Text style={[
+              styles.title,
+              isDesktop && styles.titleDesktop,
+              isTablet && styles.titleTablet,
+              isMobile && styles.titleMobile
+            ]}></Text>
+            <Text style={[
+              styles.subtitle,
+              isDesktop && styles.subtitleDesktop,
+              isTablet && styles.subtitleTablet,
+              isMobile && styles.subtitleMobile
+            ]}></Text>
+            <View style={styles.headerDecoration} />
+          </View>
+      </ImageBackground>
 
       {/* Services Section */}
       <View style={styles.card}>
@@ -148,10 +174,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    backgroundColor: "#1e40af",
     paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
+  },
+  // Desktop styles
+  headerDesktop: {
+    paddingTop: 120,
+    paddingBottom: 60,
+    paddingHorizontal: 40,
+  },
+  // Tablet styles
+  headerTablet: {
+    paddingTop: 90,
+    paddingBottom: 40,
+    paddingHorizontal: 30,
+  },
+  // Mobile styles
+  headerMobile: {
+    paddingTop: 70,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerImage: {
+    borderRadius: 0,
+    // Platform-specific image styling
+    ...(Platform.OS === 'web' && {
+      objectFit: 'cover',
+    }),
   },
   headerContent: {
     alignItems: "center",
@@ -163,31 +213,60 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "center",
   },
+  titleDesktop: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  titleTablet: {
+    fontSize: 42,
+    marginBottom: 10,
+  },
+  titleMobile: {
+    fontSize: 36,
+    marginBottom: 8,
+  },
   subtitle: {
     fontSize: 18,
     color: "#e2e8f0",
     textAlign: "center",
     marginBottom: 20,
   },
+  subtitleDesktop: {
+    fontSize: 24,
+    marginBottom: 30,
+  },
+  subtitleTablet: {
+    fontSize: 20,
+    marginBottom: 25,
+  },
+  subtitleMobile: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
   headerDecoration: {
-    width: 60,
-    height: 4,
+    // width: 180,
+    // height: 4,
     backgroundColor: "#3b82f6",
     borderRadius: 2,
+    marginTop: 100,
   },
   card: {
     backgroundColor: "#ffffff",
     margin: 16,
     borderRadius: 16,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }
+    })
   },
   cardHeader: {
     marginBottom: 20,
@@ -249,14 +328,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Platform.select({
+      web: {
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }
+    })
   },
   primaryActionText: {
     fontSize: 18,
@@ -273,14 +356,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Platform.select({
+      web: {
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }
+    })
   },
   secondaryActionText: {
     fontSize: 18,
@@ -323,14 +410,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 18,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Platform.select({
+      web: {
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }
+    })
   },
   contactButtonText: {
     fontSize: 18,
