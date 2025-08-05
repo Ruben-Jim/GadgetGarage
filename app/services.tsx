@@ -28,7 +28,7 @@ const Services = () => {
       duration: "2-4 hours",
       features: ["Component selection", "Assembly", "Testing", "Optimization", "1-year warranty"],
       icon: "🖥️",
-      color: "#1e40af"
+      color: "#059669"
     },
     {
       id: 2,
@@ -38,7 +38,7 @@ const Services = () => {
       duration: "1-3 hours",
       features: ["Full diagnosis", "Hardware testing", "Software troubleshooting", "Repair", "Performance check"],
       icon: "🔧",
-      color: "#dc2626"
+      color: "#059669"
     },
     {
       id: 3,
@@ -58,7 +58,7 @@ const Services = () => {
       duration: "1-2 hours",
       features: ["OS optimization", "Driver updates", "Software cleanup", "Performance tuning", "Security setup"],
       icon: "📈",
-      color: "#7c3aed"
+      color: "#059669"
     }
   ];
 
@@ -79,9 +79,9 @@ const Services = () => {
       <View style={styles.backButtonContainer}>
         <BackButton 
       // variant = default, minimal, floating
-          variant="minimal" 
-          color="#059669" 
-          title="Home"
+          variant="floating" 
+          color="#1e40af" 
+          title=""
         />
       </View>
 
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#059669",
+    backgroundColor: "#1e40af",
     paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
@@ -175,12 +175,12 @@ const styles = StyleSheet.create({
   headerDecoration: {
     width: 60,
     height: 4,
-    backgroundColor: "#10b981",
+    backgroundColor: "#3b82f6",
     borderRadius: 2,
   },
   backButtonContainer: {
     position: "absolute",
-    top: 60,
+    top: 58,
     left: 15,
     zIndex: 10,
   },

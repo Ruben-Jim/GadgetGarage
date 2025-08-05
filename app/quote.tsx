@@ -110,9 +110,9 @@ const Quote = () => {
       {/* Custom Back Button */}
       <View style={styles.backButtonContainer}>
         <BackButton 
-      // variant = default, minimal, floating
+          // variant = default, minimal, floating
           variant="minimal" 
-          color="#059669" 
+          color="#1e40af" 
           title="Home"
         />
       </View>
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#1e40af",
     paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
@@ -295,13 +295,13 @@ const styles = StyleSheet.create({
   headerDecoration: {
     width: 60,
     height: 4,
-    backgroundColor: "#60a5fa",
+    backgroundColor: "#3b82f6",
     borderRadius: 2,
   },
   backButtonContainer: {
     position: "absolute",
-    top: 50,
-    left: 16,
+    top: 68,
+    left: 15,
     zIndex: 10,
   },
   card: {

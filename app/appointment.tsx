@@ -1,4 +1,5 @@
 
+import BackButton from "@/components/BackButton";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -100,13 +101,24 @@ const Appointment = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <StatusBar style="light" />
       
-      {/* Modern Header with Gradient-like Effect */}
+      {/* Modern Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Book Your Appointment</Text>
+          <Text style={styles.title}>Book Appointment</Text>
           <Text style={styles.subtitle}>Schedule your professional consultation</Text>
           <View style={styles.headerDecoration} />
         </View>
+      </View>
+
+      {/* Custom Back Button */}
+      <View style={styles.backButtonContainer}>
+        <BackButton
+        // variant = default, minimal, flating
+        variant="minimal"
+        color="#1e40af"
+        title="Home"
+        />
+
       </View>
 
       {/* Service Selection Card */}
@@ -304,6 +316,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#3b82f6",
     borderRadius: 2,
   },
+  backButtonContainer: {
+    position: "absolute",
+    top: 68,
+    left: 15,
+    zIndex: 10,
+  },
   card: {
     backgroundColor: "#ffffff",
     margin: 16,
@@ -314,7 +332,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -346,8 +364,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   serviceCardActive: {
-    backgroundColor: "#1e40af",
-    borderColor: "#1e40af",
+    backgroundColor: "#3b82f6",
+    borderColor: "#3b82f6",
   },
   serviceCardText: {
     fontSize: 15,
@@ -411,8 +429,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   timeCardActive: {
-    backgroundColor: "#dc2626",
-    borderColor: "#dc2626",
+    backgroundColor: "#3b82f6",
+    borderColor: "#3b82f6",
   },
   timeCardText: {
     fontSize: 16,
@@ -432,7 +450,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
     borderLeftWidth: 4,
@@ -513,7 +531,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
   },
