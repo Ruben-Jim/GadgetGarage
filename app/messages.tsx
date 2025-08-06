@@ -1,4 +1,5 @@
 
+import BackButton from "@/components/BackButton";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -63,6 +64,16 @@ const Messages = () => {
           <Text style={styles.subtitle}>Chat with Gadget Garage</Text>
           <View style={styles.headerDecoration} />
         </View>
+      </View>
+
+      {/* Custom Back Button */}
+      <View style={styles.backButtonContainer}>
+        <BackButton 
+      // variant = default, minimal, floating
+          variant="floating" 
+          color="#7c3aed" 
+          title=""
+        />
       </View>
 
       {/* Messages Container */}
@@ -155,6 +166,7 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: "center",
   },
+  
   title: {
     fontSize: 32,
     fontWeight: "800",
@@ -173,6 +185,12 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: "#a855f7",
     borderRadius: 2,
+  },
+  backButtonContainer: {
+    position: "absolute",
+    top: 58,
+    left: 15,
+    zIndex: 10,
   },
   messagesContainer: {
     flex: 1,

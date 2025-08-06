@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 6,
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.5,
+    // shadowRadius: 8,
+    // elevation: 6,
   },
   iconContainer: {
     marginRight: 0,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   iconFloating: {
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: "700",
   },
   text: {

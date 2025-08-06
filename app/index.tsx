@@ -82,13 +82,13 @@ const Index = () => {
             <Text style={styles.primaryActionSubtext}>Tell us about your project</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={styles.secondaryActionButton}
             onPress={() => router.push('/appointment')}
           >
             <Text style={styles.secondaryActionText}>Book Appointment</Text>
             <Text style={styles.secondaryActionSubtext}>Schedule in-person visit</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 
