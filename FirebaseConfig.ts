@@ -6,7 +6,7 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCaklIEadgb9ZckNGOyr6SDiaZvbOYZqBY",
+    apiKey: process.env.EXPO_FIREBASE_API_KEY,
     authDomain: "gadget-garage-4a721.firebaseapp.com",
     projectId: "gadget-garage-4a721",
     storageBucket: "gadget-garage-4a721.firebasestorage.app",
