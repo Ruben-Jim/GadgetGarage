@@ -4,11 +4,15 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import React, { useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { db } from "../FirebaseConfig";
 
 const Appointment = () => {
   const router = useRouter();
+  const [data, setData] = useState({
+    name: "",
+    address: "",
+  })
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
@@ -54,6 +58,7 @@ const Appointment = () => {
     try {
       // Add document to Firestore
       const docRef = await addDoc(collection(db, "appointments"), {
+        ...data,
         service: selectedService,
         date: selectedDate,
         time: selectedTime,
@@ -73,6 +78,10 @@ const Appointment = () => {
       );
 
       // Reset form after successful booking
+      setData({
+        name: "",
+        address: "",
+      });
       setSelectedDate("");
       setSelectedTime("");
       setSelectedService("");
@@ -121,10 +130,43 @@ const Appointment = () => {
 
       </View>
 
+      {/* Name card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>1. Contact Information</Text>
+          <Text style={styles.cardSubtitle}>Let us know how to reach you</Text>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Name *</Text>
+          <TextInput
+            style={styles.input}
+            value={data.name}
+            onChangeText={(text) => setData({...data, name: text})}
+            placeholder="Your full name"
+            placeholderTextColor="#9ca3af"
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Address *</Text>
+          <TextInput
+            style={styles.input}
+            value={data.address}
+            onChangeText={(text) => setData({...data, address: text})}
+            placeholder="1234 E power ave"
+            placeholderTextColor="#9ca3af"
+            // keyboardType="home-address"
+            autoCapitalize="none"
+          />
+        </View>
+        
+      </View>
+
       {/* Service Selection Card */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>1. Choose Your Service</Text>
+          <Text style={styles.cardTitle}>2. Choose Your Service</Text>
           <Text style={styles.cardSubtitle}>What can we help you with today?</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.serviceContainer}>
@@ -151,7 +193,7 @@ const Appointment = () => {
       {/* Date Selection Card */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>2. Pick Your Date</Text>
+          <Text style={styles.cardTitle}>3. Pick Your Date</Text>
           <Text style={styles.cardSubtitle}>Available dates for the next 2 weeks</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateContainer}>
@@ -190,7 +232,7 @@ const Appointment = () => {
       {/* Time Selection Card */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>3. Select Time</Text>
+          <Text style={styles.cardTitle}>4. Select Time</Text>
           <Text style={styles.cardSubtitle}>Choose your preferred time slot</Text>
         </View>
         <View style={styles.timeGrid}>
@@ -348,6 +390,23 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 16,
     color: "#64748b",
+  },
+  inputGroup: {
+    marginBottom: 5,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1e293b",
+    marginBottom: 8,
+  },
+  input:{
+    backgroundColor: "#f8fafc",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
   },
   serviceContainer: {
     flexDirection: "row",
