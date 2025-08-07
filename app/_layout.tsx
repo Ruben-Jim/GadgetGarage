@@ -79,6 +79,13 @@ const RootLayout = () => {
           headerShown: false
         }}
       />
+      <Stack.Screen
+        name="admin"
+        options={{
+          title: "Admin Dashboard",
+          headerShown: false
+        }}
+      />
     </Stack>
   );
 };

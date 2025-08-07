@@ -134,6 +134,14 @@ const Index = () => {
           <Text style={styles.contactButtonText}>💬 Message Us</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Discreet Admin Access */}
+      <TouchableOpacity 
+        style={styles.adminAccess}
+        onPress={() => router.push('/admin')}
+      >
+        <Text style={styles.adminAccessText}>⚙️</Text>
+      </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -336,6 +344,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#ffffff",
+  },
+  adminAccess: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.3,
+  },
+  adminAccessText: {
+    fontSize: 16,
+    color: '#64748b',
   },
 });
 
