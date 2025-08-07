@@ -1,18 +1,17 @@
-import BackButton from '@/components/BackButton';
 import { StatusBar } from 'expo-status-bar';
 import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Modal,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { db } from '../FirebaseConfig';
 
@@ -26,15 +25,12 @@ interface AdminData {
 
 interface AppointmentData {
   id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  preferredDate: string;
-  preferredTime: string;
-  deviceType: string;
-  issue: string;
-  urgency: string;
+  name: string;
+  address: string;
+  service: string;
+  date: string;
+  time: string;
+  status: string;
   createdAt: any;
 }
 
@@ -50,9 +46,9 @@ interface QuoteData {
   createdAt: any;
 }
 
-const ADMIN_PASSWORD = process.env.EXPO_ADMIN_PASSWORD || 'GadgetGarage2024!'; // Set EXPO_ADMIN_PASSWORD in your environment
+const ADMIN_PASSWORD = process.env.EXPO_ADMIN_PASSWORD || '!'; // Set EXPO_ADMIN_PASSWORD in your environment
 
-const Dashboard = () => {
+const adminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [data, setData] = useState<AdminData>({ appointments: [], quotes: [] });
@@ -162,21 +158,27 @@ const Dashboard = () => {
     >
       <View style={styles.itemHeader}>
         <Text style={styles.itemName}>
-          {item.firstName} {item.lastName}
+          {type === 'appointment' ? item.name : `${item.firstName} ${item.lastName}`}
         </Text>
         <Text style={styles.itemDate}>
           {formatDate(item.createdAt)}
         </Text>
       </View>
-      <Text style={styles.itemInfo}>Email: {item.email}</Text>
-      <Text style={styles.itemInfo}>Phone: {item.phone}</Text>
-      <Text style={styles.itemInfo}>Device: {item.deviceType}</Text>
-      <Text style={styles.itemInfo}>Issue: {item.issue}</Text>
-      <Text style={styles.itemInfo}>Urgency: {item.urgency}</Text>
-      {type === 'appointment' && (
+      {type === 'appointment' ? (
         <>
-          <Text style={styles.itemInfo}>Preferred Date: {item.preferredDate}</Text>
-          <Text style={styles.itemInfo}>Preferred Time: {item.preferredTime}</Text>
+          <Text style={styles.itemInfo}>Address: {item.address}</Text>
+          <Text style={styles.itemInfo}>Service: {item.service}</Text>
+          <Text style={styles.itemInfo}>Date: {item.date}</Text>
+          <Text style={styles.itemInfo}>Time: {item.time}</Text>
+          <Text style={styles.itemInfo}>Status: {item.status}</Text>
+        </>
+      ) : (
+        <>
+          <Text style={styles.itemInfo}>Email: {item.email}</Text>
+          <Text style={styles.itemInfo}>Phone: {item.phone}</Text>
+          <Text style={styles.itemInfo}>Device: {item.deviceType}</Text>
+          <Text style={styles.itemInfo}>Issue: {item.issue}</Text>
+          <Text style={styles.itemInfo}>Urgency: {item.urgency}</Text>
         </>
       )}
     </TouchableOpacity>
@@ -198,39 +200,58 @@ const Dashboard = () => {
             
             {selectedItem && (
               <>
-                <Text style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Name: </Text>
-                  {selectedItem.firstName} {selectedItem.lastName}
-                </Text>
-                <Text style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Email: </Text>
-                  {selectedItem.email}
-                </Text>
-                <Text style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Phone: </Text>
-                  {selectedItem.phone}
-                </Text>
-                <Text style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Device: </Text>
-                  {selectedItem.deviceType}
-                </Text>
-                <Text style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Issue: </Text>
-                  {selectedItem.issue}
-                </Text>
-                <Text style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Urgency: </Text>
-                  {selectedItem.urgency}
-                </Text>
-                {selectedItem.type === 'appointment' && (
+                {selectedItem.type === 'appointment' ? (
                   <>
                     <Text style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>Preferred Date: </Text>
-                      {selectedItem.preferredDate}
+                      <Text style={styles.detailLabel}>Name: </Text>
+                      {selectedItem.name}
                     </Text>
                     <Text style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>Preferred Time: </Text>
-                      {selectedItem.preferredTime}
+                      <Text style={styles.detailLabel}>Address: </Text>
+                      {selectedItem.address}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Service: </Text>
+                      {selectedItem.service}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Date: </Text>
+                      {selectedItem.date}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Time: </Text>
+                      {selectedItem.time}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Status: </Text>
+                      {selectedItem.status}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Name: </Text>
+                      {selectedItem.firstName} {selectedItem.lastName}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Email: </Text>
+                      {selectedItem.email}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Phone: </Text>
+                      {selectedItem.phone}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Device: </Text>
+                      {selectedItem.deviceType}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Issue: </Text>
+                      {selectedItem.issue}
+                    </Text>
+                    <Text style={styles.detailItem}>
+                      <Text style={styles.detailLabel}>Urgency: </Text>
+                      {selectedItem.urgency}
                     </Text>
                   </>
                 )}
@@ -265,12 +286,12 @@ const Dashboard = () => {
     return (
       <View style={styles.container}>
         <StatusBar style="dark" />
-        <BackButton 
+        {/* <BackButton 
       // variant = default, minimal, floating
           variant="floating" 
           color="#7c3aed" 
           title=""
-        />
+        /> */}
         <View style={styles.authContainer}>
           <Text style={styles.title}>Admin Access</Text>
           <Text style={styles.subtitle}>Enter admin password to continue</Text>
@@ -295,12 +316,12 @@ const Dashboard = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <BackButton 
+      {/* <BackButton 
       // variant = default, minimal, floating
           variant="floating" 
           color="#7c3aed" 
           title=""
-        />
+        /> */}
       
       <ScrollView
         style={styles.content}
@@ -556,4 +577,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Dashboard;
+export default adminPage;

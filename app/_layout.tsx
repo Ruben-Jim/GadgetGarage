@@ -80,10 +80,10 @@ const RootLayout = () => {
         }}
       />
       <Stack.Screen
-        name="dashboard"
+        name="admin"
         options={{
-          title: "Dashboard",
-          headerShown: false
+          title: "admin",
+          headerShown: true
         }}
       />
     </Stack>

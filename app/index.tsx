@@ -138,7 +138,7 @@ const Index = () => {
       {/* Discreet Admin Access */}
       <TouchableOpacity 
         style={styles.adminAccess}
-        onPress={() => router.push('/dashboard')}
+        onPress={() => router.push('/admin')}
       >
         <Text style={styles.adminAccessText}>⚙️</Text>
       </TouchableOpacity>

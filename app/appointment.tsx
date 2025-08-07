@@ -49,8 +49,8 @@ const Appointment = () => {
   ];
 
   const handleBooking = async () => {
-    if (!selectedDate || !selectedTime || !selectedService) {
-      Alert.alert("Missing Information", "Please select a date, time, and service type.");
+    if (!data.name || !data.address || !selectedDate || !selectedTime || !selectedService) {
+      Alert.alert("Missing Information", "Please fill in your name, address and select a date, time, and service type.");
       return;
     }
 
