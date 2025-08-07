@@ -458,7 +458,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     minWidth: 120,
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 3,
   },
   statNumber: {
@@ -486,7 +489,10 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
-    boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
     elevation: 2,
   },
   itemHeader: {

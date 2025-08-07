@@ -192,7 +192,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+    shadowColor: "#000",
+    shadowOffset: { 
+      width: 0, 
+      height: 2 
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
     elevation: 4,
   },
   serviceHeader: {
@@ -276,7 +282,13 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 3,
   },
   quoteButtonText: {
@@ -289,7 +301,13 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 16,
     padding: 20,
-    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
     elevation: 4,
   },
   consultationHeader: {
@@ -310,7 +328,13 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 12,
     alignItems: "center",
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 3,
   },
   appointmentButtonText: {
