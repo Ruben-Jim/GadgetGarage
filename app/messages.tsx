@@ -2,7 +2,9 @@
 import BackButton from "@/components/BackButton";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
+import { AnimatedHeader, AnimatedText, AnimatedButton, AnimatedCard } from "../components/AnimatedComponents";
 
 interface Message {
   id: number;
@@ -58,29 +60,33 @@ const Messages = () => {
       <StatusBar style="light" />
       
       {/* Modern Header */}
-      <View style={styles.header}>
+      <AnimatedHeader style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Messages</Text>
-          <Text style={styles.subtitle}>Chat with Gadget Garage</Text>
-          <View style={styles.headerDecoration} />
+          <AnimatedText delay={200} style={styles.title}>Messages</AnimatedText>
+          <AnimatedText delay={400} style={styles.subtitle}>Chat with Gadget Garage</AnimatedText>
+          <Animated.View 
+            entering={ZoomIn.delay(600).springify()}
+            style={styles.headerDecoration} 
+          />
         </View>
-      </View>
+      </AnimatedHeader>
 
       {/* Custom Back Button */}
       <View style={styles.backButtonContainer}>
         <BackButton 
       // variant = default, minimal, floating
           variant="floating" 
-          color="#7c3aed" 
+          color="#ffffff" 
           title=""
         />
       </View>
 
       {/* Messages Container */}
       <ScrollView style={styles.messagesContainer} showsVerticalScrollIndicator={false}>
-        {messages.map((message) => (
-          <View
+        {messages.map((message, index) => (
+          <Animated.View
             key={message.id}
+            entering={FadeInUp.delay(index * 100).springify()}
             style={[
               styles.messageContainer,
               message.sender === "customer" ? styles.customerMessage : styles.businessMessage
@@ -98,34 +104,30 @@ const Messages = () => {
             ]}>
               {formatTime(message.timestamp)}
             </Text>
-          </View>
+          </Animated.View>
         ))}
       </ScrollView>
 
       {/* Quick Actions Card */}
-      <View style={styles.quickActionsCard}>
+      <AnimatedCard delay={300} style={styles.quickActionsCard}>
         <Text style={styles.quickActionsTitle}>Quick Questions</Text>
         <View style={styles.quickActionButtons}>
-          <TouchableOpacity
-            style={styles.quickActionButton}
-            onPress={() => setNewMessage("What are your current rates for PC building?")}
-          >
-            <Text style={styles.quickActionText}>💰 Pricing</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.quickActionButton}
-            onPress={() => setNewMessage("How long does a typical repair take?")}
-          >
-            <Text style={styles.quickActionText}>⏰ Timeline</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.quickActionButton}
-            onPress={() => setNewMessage("Do you offer warranties on your work?")}
-          >
-            <Text style={styles.quickActionText}>🛡️ Warranty</Text>
-          </TouchableOpacity>
+          {[
+            { text: "💰 Pricing", message: "What are your current rates for PC building?" },
+            { text: "⏰ Timeline", message: "How long does a typical repair take?" },
+            { text: "🛡️ Warranty", message: "Do you offer warranties on your work?" }
+          ].map((action, index) => (
+            <AnimatedButton
+              key={index}
+              delay={400 + index * 100}
+              onPress={() => setNewMessage(action.message)}
+              style={styles.quickActionButton}
+            >
+              <Text style={styles.quickActionText}>{action.text}</Text>
+            </AnimatedButton>
+          ))}
         </View>
-      </View>
+      </AnimatedCard>
 
       {/* Input Container */}
       <View style={styles.inputContainer}>
@@ -135,17 +137,17 @@ const Messages = () => {
             value={newMessage}
             onChangeText={setNewMessage}
             placeholder="Type your message..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor="#666666"
             multiline
             maxLength={500}
           />
-          <TouchableOpacity 
-            style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
+          <AnimatedButton
+            delay={600}
             onPress={sendMessage}
-            disabled={!newMessage.trim()}
+            style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
           >
             <Text style={styles.sendButtonText}>Send</Text>
-          </TouchableOpacity>
+          </AnimatedButton>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -155,36 +157,47 @@ const Messages = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0a0a0a",
   },
   header: {
-    backgroundColor: "#7c3aed",
+    backgroundColor: "#000000",
     paddingTop: 60,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#1a1a1a",
   },
   headerContent: {
     alignItems: "center",
   },
   
   title: {
-    fontSize: 32,
-    fontWeight: "800",
+    fontSize: 36,
+    fontWeight: "900",
     color: "#ffffff",
     marginBottom: 8,
     textAlign: "center",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+    letterSpacing: 1,
   },
   subtitle: {
     fontSize: 18,
-    color: "#e2e8f0",
+    color: "#a0a0a0",
     textAlign: "center",
     marginBottom: 20,
+    letterSpacing: 0.5,
   },
   headerDecoration: {
-    width: 60,
-    height: 4,
-    backgroundColor: "#a855f7",
+    width: 80,
+    height: 3,
+    backgroundColor: "#ffffff",
     borderRadius: 2,
+    shadowColor: "#ffffff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
   },
   backButtonContainer: {
     position: "absolute",
@@ -195,31 +208,34 @@ const styles = StyleSheet.create({
   messagesContainer: {
     flex: 1,
     padding: 16,
+    backgroundColor: "#0a0a0a",
   },
   messageContainer: {
     marginBottom: 16,
     maxWidth: "85%",
-    padding: 16,
+    padding: 18,
     borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 6,
   },
   customerMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#1e40af",
+    backgroundColor: "#ffffff",
     borderBottomRightRadius: 6,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
   },
   businessMessage: {
     alignSelf: "flex-start",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderBottomLeftRadius: 6,
   },
   messageText: {
@@ -228,42 +244,50 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   customerMessageText: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "600",
   },
   businessMessageText: {
-    color: "#1e293b",
+    color: "#ffffff",
+    fontWeight: "500",
   },
   timestamp: {
     fontSize: 12,
     marginTop: 8,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   customerTimestamp: {
-    color: "#dbeafe",
+    color: "#333333",
     textAlign: "right",
   },
   businessTimestamp: {
-    color: "#64748b",
+    color: "#888888",
   },
   quickActionsCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   quickActionsTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 16,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   quickActionButtons: {
     flexDirection: "row",
@@ -271,9 +295,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   quickActionButton: {
-    backgroundColor: "#f8fafc",
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
+    backgroundColor: "#0f0f0f",
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
@@ -282,14 +306,15 @@ const styles = StyleSheet.create({
   },
   quickActionText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
+    fontWeight: "700",
+    color: "#b0b0b0",
+    letterSpacing: 0.3,
   },
   inputContainer: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
+    borderTopColor: "#2a2a2a",
   },
   inputWrapper: {
     flexDirection: "row",
@@ -299,35 +324,37 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 24,
     paddingHorizontal: 20,
     paddingVertical: 12,
     maxHeight: 120,
     fontSize: 16,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
+    color: "#ffffff",
   },
   sendButton: {
-    backgroundColor: "#1e40af",
+    backgroundColor: "#ffffff",
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 24,
-    shadowColor: "#000",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   sendButtonDisabled: {
-    backgroundColor: "#d1d5db",
+    backgroundColor: "#2a2a2a",
   },
   sendButtonText: {
-    color: "#ffffff",
+    color: "#000000",
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "900",
+    letterSpacing: 0.5,
   },
 });
 

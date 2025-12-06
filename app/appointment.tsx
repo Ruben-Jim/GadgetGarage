@@ -5,6 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import React, { useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import Animated, { ZoomIn, FadeInUp } from "react-native-reanimated";
+import { AnimatedHeader, AnimatedText, AnimatedButton, AnimatedCard, AnimatedInputCard } from "../components/AnimatedComponents";
 import { db } from "../FirebaseConfig";
 
 const Appointment = () => {
@@ -56,17 +58,23 @@ const Appointment = () => {
 
     setIsSubmitting(true);
     try {
-      // Add document to Firestore
-      const docRef = await addDoc(collection(db, "appointments"), {
-        ...data,
+      // Prepare appointment data for Firestore
+      const appointmentData = {
+        name: data.name.trim(),
+        address: data.address.trim(),
         service: selectedService,
         date: selectedDate,
         time: selectedTime,
         createdAt: serverTimestamp(),
         status: "pending"
-      });
+      };
 
-      console.log("Appointment booked with ID: ", docRef.id);
+      console.log("Submitting appointment to Firestore...", appointmentData);
+
+      // Add document to Firestore
+      const docRef = await addDoc(collection(db, "appointments"), appointmentData);
+
+      console.log("Appointment booked successfully with ID: ", docRef.id);
       
       Alert.alert(
         "Appointment Confirmed!",
@@ -88,16 +96,25 @@ const Appointment = () => {
 
     } catch (error: any) {
       console.error("Error booking appointment: ", error);
+      console.error("Error details:", {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
       
       let errorMessage = "Failed to save appointment. Please try again.";
       
       // Check for specific Firebase errors
       if (error.code === 'permission-denied') {
-        errorMessage = "Permission denied. Please check your Firebase configuration and security rules.";
+        errorMessage = "Permission denied. Please check your Firebase configuration and security rules. Make sure Firestore allows write access.";
       } else if (error.code === 'unavailable') {
         errorMessage = "Service temporarily unavailable. Please check your internet connection and try again.";
       } else if (error.code === 'unauthenticated') {
-        errorMessage = "Authentication required. Please check your Firebase configuration.";
+        errorMessage = "Authentication required. Please check your Firebase API key configuration.";
+      } else if (error.code === 'failed-precondition') {
+        errorMessage = "Firestore is not enabled or not properly configured. Please check your Firebase project settings.";
+      } else if (error.message) {
+        errorMessage = `Error: ${error.message}`;
       }
       
       Alert.alert("Booking Error", errorMessage);
@@ -111,27 +128,30 @@ const Appointment = () => {
       <StatusBar style="light" />
       
       {/* Modern Header */}
-      <View style={styles.header}>
+      <AnimatedHeader style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Book Appointment</Text>
-          <Text style={styles.subtitle}>Schedule your professional consultation</Text>
-          <View style={styles.headerDecoration} />
+          <AnimatedText delay={200} style={styles.title}>Book Appointment</AnimatedText>
+          <AnimatedText delay={400} style={styles.subtitle}>Schedule your professional consultation</AnimatedText>
+          <Animated.View 
+            entering={ZoomIn.delay(600).springify()}
+            style={styles.headerDecoration} 
+          />
         </View>
-      </View>
+      </AnimatedHeader>
 
       {/* Custom Back Button */}
       <View style={styles.backButtonContainer}>
         <BackButton
         // variant = default, minimal, flating
         variant="floating"
-        color="#1e40af"
+        color="#ffffff"
         title=""
         />
 
       </View>
 
       {/* Name card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={200} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>1. Contact Information</Text>
           <Text style={styles.cardSubtitle}>Let us know how to reach you</Text>
@@ -144,7 +164,7 @@ const Appointment = () => {
             value={data.name}
             onChangeText={(text) => setData({...data, name: text})}
             placeholder="Your full name"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor="#666666"
           />
         </View>
 
@@ -155,16 +175,16 @@ const Appointment = () => {
             value={data.address}
             onChangeText={(text) => setData({...data, address: text})}
             placeholder="1234 E power ave"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor="#666666"
             // keyboardType="home-address"
             autoCapitalize="none"
           />
         </View>
         
-      </View>
+      </AnimatedInputCard>
 
       {/* Service Selection Card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={300} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>2. Choose Your Service</Text>
           <Text style={styles.cardSubtitle}>What can we help you with today?</Text>
@@ -188,10 +208,10 @@ const Appointment = () => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
+      </AnimatedInputCard>
 
       {/* Date Selection Card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={400} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>3. Pick Your Date</Text>
           <Text style={styles.cardSubtitle}>Available dates for the next 2 weeks</Text>
@@ -227,10 +247,10 @@ const Appointment = () => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
+      </AnimatedInputCard>
 
       {/* Time Selection Card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={500} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>4. Select Time</Text>
           <Text style={styles.cardSubtitle}>Choose your preferred time slot</Text>
@@ -254,11 +274,11 @@ const Appointment = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
+      </AnimatedInputCard>
 
       {/* Appointment Summary Card */}
       {selectedDate && selectedTime && selectedService && (
-        <View style={styles.summaryCard}>
+        <AnimatedCard delay={600} style={styles.summaryCard}>
           <View style={styles.summaryHeader}>
             <Text style={styles.summaryTitle}>📅 Appointment Summary</Text>
           </View>
@@ -279,28 +299,28 @@ const Appointment = () => {
           <View style={styles.feeNotice}>
             <Text style={styles.feeText}>💳 $25 consultation fee required</Text>
           </View>
-        </View>
+        </AnimatedCard>
       )}
 
       {/* Booking Button */}
-      <TouchableOpacity 
+      <AnimatedButton
+        delay={700}
+        onPress={handleBooking}
         style={[
           styles.bookButton,
           (!selectedDate || !selectedTime || !selectedService) && styles.bookButtonDisabled,
           isSubmitting && styles.bookButtonSubmitting
         ]}
-        onPress={handleBooking}
-        disabled={!selectedDate || !selectedTime || !selectedService || isSubmitting}
       >
         {isSubmitting ? (
           <ActivityIndicator color="#ffffff" size="large" />
         ) : (
           <Text style={styles.bookButtonText}>Confirm Appointment</Text>
         )}
-      </TouchableOpacity>
+      </AnimatedButton>
 
       {/* Information Card */}
-      <View style={styles.infoCard}>
+      <AnimatedCard delay={800} style={styles.infoCard}>
         <Text style={styles.infoTitle}>What to Expect</Text>
         <View style={styles.infoList}>
           <View style={styles.infoItem}>
@@ -320,7 +340,7 @@ const Appointment = () => {
             <Text style={styles.infoText}>Same-day service when possible</Text>
           </View>
         </View>
-      </View>
+      </AnimatedCard>
     </ScrollView>
   );
 };
@@ -328,35 +348,46 @@ const Appointment = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0a0a0a",
   },
   header: {
-    backgroundColor: "#1e40af",
+    backgroundColor: "#000000",
     paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#1a1a1a",
   },
   headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "800",
+    fontSize: 36,
+    fontWeight: "900",
     color: "#ffffff",
     marginBottom: 8,
     textAlign: "center",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+    letterSpacing: 1,
   },
   subtitle: {
     fontSize: 18,
-    color: "#e2e8f0",
+    color: "#a0a0a0",
     textAlign: "center",
     marginBottom: 20,
+    letterSpacing: 0.5,
   },
   headerDecoration: {
-    width: 60,
-    height: 4,
-    backgroundColor: "#3b82f6",
+    width: 80,
+    height: 3,
+    backgroundColor: "#ffffff",
     borderRadius: 2,
+    shadowColor: "#ffffff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
   },
   backButtonContainer: {
     position: "absolute",
@@ -365,56 +396,65 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   cardHeader: {
     marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 24,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 4,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   cardSubtitle: {
     fontSize: 16,
-    color: "#64748b",
+    color: "#a0a0a0",
+    letterSpacing: 0.3,
   },
   inputGroup: {
     marginBottom: 5,
   },
   label: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#1e293b",
+    fontWeight: "700",
+    color: "#ffffff",
     marginBottom: 8,
+    letterSpacing: 0.3,
   },
   input:{
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
+    color: "#ffffff",
   },
   serviceContainer: {
     flexDirection: "row",
   },
   serviceCard: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     paddingHorizontal: 20,
     paddingVertical: 16,
@@ -423,25 +463,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   serviceCardActive: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
   },
   serviceCardText: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#475569",
+    fontWeight: "700",
+    color: "#b0b0b0",
     textAlign: "center",
   },
   serviceCardTextActive: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "900",
   },
   dateContainer: {
     flexDirection: "row",
   },
   dateCard: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     marginRight: 12,
@@ -449,28 +490,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dateCardActive: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
   },
   dateDay: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#64748b",
+    fontWeight: "700",
+    color: "#888888",
     marginBottom: 4,
   },
   dateNumber: {
     fontSize: 24,
-    fontWeight: "800",
-    color: "#1e293b",
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 4,
   },
   dateMonth: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#64748b",
+    fontWeight: "700",
+    color: "#888888",
   },
   dateTextActive: {
-    color: "#ffffff",
+    color: "#000000",
   },
   timeGrid: {
     flexDirection: "row",
@@ -478,9 +519,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   timeCard: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     width: "48%",
@@ -488,40 +529,47 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   timeCardActive: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
   },
   timeCardText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#475569",
+    fontWeight: "700",
+    color: "#b0b0b0",
   },
   timeCardTextActive: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "900",
   },
   summaryCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ffffff",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
-    borderLeftWidth: 4,
-    borderLeftColor: "#3b82f6",
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   summaryHeader: {
     marginBottom: 16,
   },
   summaryTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#ffffff",
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   summaryContent: {
     marginBottom: 16,
@@ -533,72 +581,81 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#64748b",
+    fontWeight: "700",
+    color: "#a0a0a0",
+    letterSpacing: 0.3,
   },
   summaryValue: {
     fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontWeight: "900",
+    color: "#ffffff",
   },
   feeNotice: {
-    backgroundColor: "#fef3c7",
+    backgroundColor: "#2a2a2a",
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#f59e0b",
+    borderColor: "#ffffff",
   },
   feeText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#92400e",
+    fontWeight: "700",
+    color: "#ffffff",
     textAlign: "center",
+    letterSpacing: 0.3,
   },
   bookButton: {
-    backgroundColor: "#059669",
-    margin: 16,
-    padding: 20,
-    borderRadius: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  bookButtonDisabled: {
-    backgroundColor: "#d1d5db",
-  },
-  bookButtonSubmitting: {
-    backgroundColor: "#6b7280",
-  },
-  bookButtonText: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  infoCard: {
     backgroundColor: "#ffffff",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    padding: 22,
+    borderRadius: 20,
+    alignItems: "center",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 8,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  bookButtonDisabled: {
+    backgroundColor: "#2a2a2a",
+  },
+  bookButtonSubmitting: {
+    backgroundColor: "#1a1a1a",
+  },
+  bookButtonText: {
+    color: "#000000",
+    fontSize: 20,
+    fontWeight: "900",
+    letterSpacing: 1,
+  },
+  infoCard: {
+    backgroundColor: "#1a1a1a",
+    margin: 16,
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    shadowColor: "#ffffff",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   infoTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 16,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   infoList: {
     gap: 12,
@@ -609,15 +666,19 @@ const styles = StyleSheet.create({
   },
   infoBullet: {
     fontSize: 18,
-    color: "#3b82f6",
+    color: "#ffffff",
     marginRight: 12,
     fontWeight: "bold",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
   },
   infoText: {
     fontSize: 16,
-    color: "#475569",
+    color: "#b0b0b0",
     flex: 1,
     lineHeight: 24,
+    letterSpacing: 0.3,
   },
 });
 

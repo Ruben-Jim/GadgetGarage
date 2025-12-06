@@ -2,8 +2,16 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Animated, { ZoomIn, FadeInDown } from "react-native-reanimated";
 import BackButton from "../components/BackButton";
+import { 
+  AnimatedCard, 
+  AnimatedButton, 
+  AnimatedHeader,
+  AnimatedText,
+  AnimatedListItem
+} from "../components/AnimatedComponents";
 
 interface Service {
   id: number;
@@ -67,28 +75,31 @@ const Services = () => {
       <StatusBar style="light" />
       
       {/* Modern Header */}
-      <View style={styles.header}>
+      <AnimatedHeader style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Our Services</Text>
-          <Text style={styles.subtitle}>Professional PC solutions for every need</Text>
-          <View style={styles.headerDecoration} />
+          <AnimatedText delay={200} style={styles.title}>Our Services</AnimatedText>
+          <AnimatedText delay={400} style={styles.subtitle}>Professional PC solutions for every need</AnimatedText>
+          <Animated.View 
+            entering={ZoomIn.delay(600).springify()}
+            style={styles.headerDecoration} 
+          />
         </View>
-      </View>
+      </AnimatedHeader>
 
       {/* Custom Back Button */}
       <View style={styles.backButtonContainer}>
         <BackButton 
       // variant = default, minimal, floating
           variant="floating" 
-          color="#1e40af" 
+          color="#ffffff" 
           title=""
         />
       </View>
 
       {/* Services Container */}
       <View style={styles.servicesContainer}>
-        {services.map((service) => (
-          <View key={service.id} style={styles.serviceCard}>
+        {services.map((service, index) => (
+          <AnimatedCard key={service.id} delay={index * 100} style={styles.serviceCard}>
             <View style={styles.serviceHeader}>
               <View style={[styles.serviceIconContainer, { backgroundColor: service.color + '20' }]}>
                 <Text style={styles.serviceIcon}>{service.icon}</Text>
@@ -109,38 +120,40 @@ const Services = () => {
             <View style={styles.featuresContainer}>
               <Text style={styles.featuresTitle}>Includes:</Text>
               <View style={styles.featuresList}>
-                {service.features.map((feature, index) => (
-                  <View key={index} style={styles.featureItem}>
+                {service.features.map((feature, featureIndex) => (
+                  <AnimatedListItem key={featureIndex} index={featureIndex} style={styles.featureItem}>
                     <Text style={styles.featureBullet}>✓</Text>
                     <Text style={styles.featureText}>{feature}</Text>
-                  </View>
+                  </AnimatedListItem>
                 ))}
               </View>
             </View>
 
-            <TouchableOpacity 
-              style={[styles.quoteButton, { backgroundColor: service.color }]}
+            <AnimatedButton
+              delay={index * 100 + 200}
               onPress={() => router.push('/quote')}
+              style={[styles.quoteButton, { backgroundColor: service.color }]}
             >
               <Text style={styles.quoteButtonText}>Get Quote</Text>
-            </TouchableOpacity>
-          </View>
+            </AnimatedButton>
+          </AnimatedCard>
         ))}
       </View>
 
       {/* Consultation Card */}
-      <View style={styles.consultationCard}>
+      <AnimatedCard delay={500} style={styles.consultationCard}>
         <View style={styles.consultationHeader}>
           <Text style={styles.consultationTitle}>Need Help Choosing?</Text>
           <Text style={styles.consultationSubtitle}>Schedule a free consultation to discuss your needs</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.appointmentButton}
+        <AnimatedButton
+          delay={700}
           onPress={() => router.push('/appointment')}
+          style={styles.appointmentButton}
         >
           <Text style={styles.appointmentButtonText}>Schedule Consultation</Text>
-        </TouchableOpacity>
-      </View>
+        </AnimatedButton>
+      </AnimatedCard>
     </ScrollView>
   );
 };
@@ -148,35 +161,46 @@ const Services = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0a0a0a",
   },
   header: {
-    backgroundColor: "#1e40af",
+    backgroundColor: "#000000",
     paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#1a1a1a",
   },
   headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "800",
+    fontSize: 36,
+    fontWeight: "900",
     color: "#ffffff",
     marginBottom: 8,
     textAlign: "center",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+    letterSpacing: 1,
   },
   subtitle: {
     fontSize: 18,
-    color: "#e2e8f0",
+    color: "#a0a0a0",
     textAlign: "center",
     marginBottom: 20,
+    letterSpacing: 0.5,
   },
   headerDecoration: {
-    width: 60,
-    height: 4,
-    backgroundColor: "#3b82f6",
+    width: 80,
+    height: 3,
+    backgroundColor: "#ffffff",
     borderRadius: 2,
+    shadowColor: "#ffffff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
   },
   backButtonContainer: {
     position: "absolute",
@@ -188,18 +212,20 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   serviceCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: "#1a1a1a",
+    borderRadius: 20,
+    padding: 24,
     marginBottom: 16,
-    shadowColor: "#000",
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    shadowColor: "#ffffff",
     shadowOffset: { 
       width: 0, 
-      height: 2 
+      height: 6 
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   serviceHeader: {
     flexDirection: "row",
@@ -221,21 +247,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   serviceTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 24,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 4,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   servicePrice: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#059669",
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#ffffff",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   serviceDescription: {
     fontSize: 16,
-    color: "#64748b",
+    color: "#a0a0a0",
     marginBottom: 16,
     lineHeight: 24,
+    letterSpacing: 0.3,
   },
   durationContainer: {
     flexDirection: "row",
@@ -244,21 +278,27 @@ const styles = StyleSheet.create({
   },
   durationLabel: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#1e293b",
+    fontWeight: "700",
+    color: "#ffffff",
+    letterSpacing: 0.3,
   },
   durationText: {
     fontSize: 16,
-    color: "#64748b",
+    color: "#a0a0a0",
+    letterSpacing: 0.3,
   },
   featuresContainer: {
     marginBottom: 20,
   },
   featuresTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 12,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   featuresList: {
     gap: 8,
@@ -268,79 +308,92 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   featureBullet: {
-    fontSize: 16,
-    color: "#059669",
+    fontSize: 18,
+    color: "#ffffff",
     marginRight: 12,
     fontWeight: "bold",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
   },
   featureText: {
     fontSize: 15,
-    color: "#475569",
+    color: "#b0b0b0",
     flex: 1,
+    letterSpacing: 0.3,
   },
   quoteButton: {
-    padding: 16,
-    borderRadius: 12,
+    padding: 18,
+    borderRadius: 16,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
   },
   quoteButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "900",
+    letterSpacing: 0.5,
   },
   consultationCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   consultationHeader: {
     marginBottom: 20,
   },
   consultationTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 24,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 4,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   consultationSubtitle: {
     fontSize: 16,
-    color: "#64748b",
+    color: "#a0a0a0",
+    letterSpacing: 0.3,
   },
   appointmentButton: {
-    backgroundColor: "#1e40af",
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 16,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
   },
   appointmentButtonText: {
-    color: "#ffffff",
+    color: "#000000",
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "900",
+    letterSpacing: 0.5,
   },
 });
 

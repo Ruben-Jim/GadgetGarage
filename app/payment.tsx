@@ -3,6 +3,8 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import Animated, { ZoomIn, FadeInUp } from "react-native-reanimated";
+import { AnimatedHeader, AnimatedText, AnimatedButton, AnimatedCard, AnimatedInputCard } from "../components/AnimatedComponents";
 
 const Payment = () => {
   const router = useRouter();
@@ -44,16 +46,19 @@ const Payment = () => {
       <StatusBar style="light" />
       
       {/* Modern Header */}
-      <View style={styles.header}>
+      <AnimatedHeader style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Payment</Text>
-          <Text style={styles.subtitle}>Secure payment processing</Text>
-          <View style={styles.headerDecoration} />
+          <AnimatedText delay={200} style={styles.title}>Payment</AnimatedText>
+          <AnimatedText delay={400} style={styles.subtitle}>Secure payment processing</AnimatedText>
+          <Animated.View 
+            entering={ZoomIn.delay(600).springify()}
+            style={styles.headerDecoration} 
+          />
         </View>
-      </View>
+      </AnimatedHeader>
 
       {/* Amount Card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={200} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>Payment Amount</Text>
           <Text style={styles.cardSubtitle}>Enter the amount you'd like to pay</Text>
@@ -65,7 +70,7 @@ const Payment = () => {
             value={amount}
             onChangeText={setAmount}
             placeholder="0.00"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor="#666666"
             keyboardType="numeric"
           />
         </View>
@@ -90,10 +95,10 @@ const Payment = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
+      </AnimatedInputCard>
 
       {/* Description Card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={300} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>Payment Description</Text>
           <Text style={styles.cardSubtitle}>Optional details about this payment</Text>
@@ -103,13 +108,13 @@ const Payment = () => {
           value={description}
           onChangeText={setDescription}
           placeholder="Service description (optional)"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor="#666666"
           multiline
         />
-      </View>
+      </AnimatedInputCard>
 
       {/* Payment Method Card */}
-      <View style={styles.card}>
+      <AnimatedInputCard delay={400} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>Payment Method</Text>
           <Text style={styles.cardSubtitle}>Choose your preferred payment option</Text>
@@ -136,11 +141,11 @@ const Payment = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
+      </AnimatedInputCard>
 
       {/* Card Information Card */}
       {paymentMethod === "card" && (
-        <View style={styles.card}>
+        <AnimatedInputCard delay={500} style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Card Information</Text>
             <Text style={styles.cardSubtitle}>Enter your card details securely</Text>
@@ -149,35 +154,35 @@ const Payment = () => {
             <TextInput
               style={styles.cardInput}
               placeholder="Card Number"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor="#666666"
               keyboardType="numeric"
             />
             <View style={styles.cardRow}>
               <TextInput
                 style={[styles.cardInput, styles.cardInputSmall]}
                 placeholder="MM/YY"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#666666"
                 keyboardType="numeric"
               />
               <TextInput
                 style={[styles.cardInput, styles.cardInputSmall]}
                 placeholder="CVV"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#666666"
                 keyboardType="numeric"
               />
             </View>
             <TextInput
               style={styles.cardInput}
               placeholder="Cardholder Name"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor="#666666"
             />
           </View>
-        </View>
+        </AnimatedInputCard>
       )}
 
       {/* Payment Summary Card */}
       {amount && paymentMethod && (
-        <View style={styles.summaryCard}>
+        <AnimatedCard delay={600} style={styles.summaryCard}>
           <View style={styles.summaryHeader}>
             <Text style={styles.summaryTitle}>📋 Payment Summary</Text>
           </View>
@@ -207,25 +212,25 @@ const Payment = () => {
               <Text style={styles.totalValue}>${amount}</Text>
             </View>
           </View>
-        </View>
+        </AnimatedCard>
       )}
 
       {/* Payment Button */}
-      <TouchableOpacity 
+      <AnimatedButton
+        delay={700}
+        onPress={handlePayment}
         style={[
           styles.payButton,
           (!paymentMethod || !amount) && styles.payButtonDisabled
         ]}
-        onPress={handlePayment}
-        disabled={!paymentMethod || !amount}
       >
         <Text style={styles.payButtonText}>
           Process Payment ${amount || "0.00"}
         </Text>
-      </TouchableOpacity>
+      </AnimatedButton>
 
       {/* Security Card */}
-      <View style={styles.card}>
+      <AnimatedCard delay={800} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>🔒 Secure Payment</Text>
           <Text style={styles.cardSubtitle}>Your data is protected with industry-standard security</Text>
@@ -233,7 +238,7 @@ const Payment = () => {
         <Text style={styles.securityText}>
           Your payment information is encrypted and secure. We use industry-standard security measures to protect your data.
         </Text>
-      </View>
+      </AnimatedCard>
     </ScrollView>
   );
 };
@@ -241,91 +246,113 @@ const Payment = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0a0a0a",
   },
   header: {
-    backgroundColor: "#dc2626",
+    backgroundColor: "#000000",
     paddingTop: 70,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#1a1a1a",
   },
   headerContent: {
     alignItems: "center",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "800",
+    fontSize: 36,
+    fontWeight: "900",
     color: "#ffffff",
     marginBottom: 8,
     textAlign: "center",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+    letterSpacing: 1,
   },
   subtitle: {
     fontSize: 18,
-    color: "#e2e8f0",
+    color: "#a0a0a0",
     textAlign: "center",
     marginBottom: 20,
+    letterSpacing: 0.5,
   },
   headerDecoration: {
-    width: 60,
-    height: 4,
-    backgroundColor: "#ef4444",
+    width: 80,
+    height: 3,
+    backgroundColor: "#ffffff",
     borderRadius: 2,
+    shadowColor: "#ffffff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   cardHeader: {
     marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 24,
+    fontWeight: "900",
+    color: "#ffffff",
     marginBottom: 4,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   cardSubtitle: {
     fontSize: 16,
-    color: "#64748b",
+    color: "#a0a0a0",
+    letterSpacing: 0.3,
   },
   amountContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#059669",
+    borderColor: "#ffffff",
     borderRadius: 12,
     paddingHorizontal: 20,
     marginBottom: 20,
   },
   dollarSign: {
     fontSize: 28,
-    fontWeight: "800",
-    color: "#059669",
+    fontWeight: "900",
+    color: "#ffffff",
     marginRight: 8,
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   amountInput: {
     flex: 1,
     fontSize: 28,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontWeight: "900",
+    color: "#ffffff",
     paddingVertical: 16,
   },
   quickAmountLabel: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#64748b",
+    fontWeight: "700",
+    color: "#a0a0a0",
     marginBottom: 12,
+    letterSpacing: 0.3,
   },
   quickAmountsContainer: {
     flexDirection: "row",
@@ -334,51 +361,53 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   quickAmountButton: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     width: "30%",
     alignItems: "center",
   },
   quickAmountButtonActive: {
-    backgroundColor: "#059669",
-    borderColor: "#059669",
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
   },
   quickAmountText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#475569",
+    fontWeight: "700",
+    color: "#b0b0b0",
   },
   quickAmountTextActive: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "900",
   },
   descriptionInput: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     height: 100,
     textAlignVertical: "top",
+    color: "#ffffff",
   },
   paymentMethodsContainer: {
     gap: 12,
   },
   paymentMethodButton: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     flexDirection: "row",
     alignItems: "center",
   },
   paymentMethodButtonActive: {
-    backgroundColor: "#dc2626",
-    borderColor: "#dc2626",
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
   },
   paymentMethodIconContainer: {
     width: 50,
@@ -393,23 +422,25 @@ const styles = StyleSheet.create({
   },
   paymentMethodText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#475569",
+    fontWeight: "700",
+    color: "#b0b0b0",
     flex: 1,
   },
   paymentMethodTextActive: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "900",
   },
   cardForm: {
     gap: 16,
   },
   cardInput: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#0f0f0f",
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: "#2a2a2a",
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
+    color: "#ffffff",
   },
   cardRow: {
     flexDirection: "row",
@@ -419,28 +450,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   summaryCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#1a1a1a",
     margin: 16,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ffffff",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    borderLeftWidth: 4,
-    borderLeftColor: "#059669",
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   summaryHeader: {
     marginBottom: 16,
   },
   summaryTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#ffffff",
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(255, 255, 255, 0.2)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   summaryContent: {
     gap: 12,
@@ -452,57 +489,64 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#64748b",
+    fontWeight: "700",
+    color: "#a0a0a0",
+    letterSpacing: 0.3,
   },
   summaryValue: {
     fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontWeight: "900",
+    color: "#ffffff",
   },
   totalRow: {
     borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
+    borderTopColor: "#2a2a2a",
     paddingTop: 12,
     marginTop: 8,
   },
   totalLabel: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#ffffff",
+    letterSpacing: 0.5,
   },
   totalValue: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#059669",
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#ffffff",
+    textShadowColor: "rgba(255, 255, 255, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   payButton: {
-    backgroundColor: "#059669",
+    backgroundColor: "#ffffff",
     margin: 16,
-    padding: 20,
-    borderRadius: 16,
+    padding: 22,
+    borderRadius: 20,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#ffffff",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 8,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
   },
   payButtonDisabled: {
-    backgroundColor: "#d1d5db",
+    backgroundColor: "#2a2a2a",
   },
   payButtonText: {
-    color: "#ffffff",
+    color: "#000000",
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: "900",
+    letterSpacing: 1,
   },
   securityText: {
     fontSize: 16,
-    color: "#475569",
+    color: "#b0b0b0",
     lineHeight: 24,
+    letterSpacing: 0.3,
   },
 });
 

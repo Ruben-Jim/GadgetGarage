@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
 import React, { useState } from 'react';
@@ -10,17 +11,20 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { db } from '../FirebaseConfig';
+import BackButton from '../components/BackButton';
+import { AnimatedHeader, AnimatedText, AnimatedButton, AnimatedCard, AnimatedListItem } from '../components/AnimatedComponents';
 
 
-// Will fix to fit the theme in the upcoming days 
+// Modern 3D dark theme matching Gadget Garage branding 
 
 interface AdminData {
   appointments: any[];
   quotes: any[];
+
 }
 
 interface AppointmentData {
@@ -46,7 +50,7 @@ interface QuoteData {
   createdAt: any;
 }
 
-const ADMIN_PASSWORD = process.env.EXPO_ADMIN_PASSWORD || '!'; // Set EXPO_ADMIN_PASSWORD in your environment
+const ADMIN_PASSWORD = (Constants?.expoConfig?.extra?.EXPO_ADMIN_PASSWORD as string) || process.env.EXPO_ADMIN_PASSWORD || '!'; // Set EXPO_ADMIN_PASSWORD in your environment
 
 const adminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -147,15 +151,19 @@ const adminPage = () => {
     );
   };
 
-  const renderItem = (item: any, type: 'appointment' | 'quote') => (
-    <TouchableOpacity
+  const renderItem = (item: any, type: 'appointment' | 'quote', index: number) => (
+    <AnimatedListItem
       key={item.id}
-      style={styles.itemCard}
-      onPress={() => {
-        setSelectedItem({ ...item, type });
-        setModalVisible(true);
-      }}
+      index={index}
     >
+      <AnimatedButton
+        delay={0}
+        onPress={() => {
+          setSelectedItem({ ...item, type });
+          setModalVisible(true);
+        }}
+        style={styles.itemCard}
+      >
       <View style={styles.itemHeader}>
         <Text style={styles.itemName}>
           {type === 'appointment' ? item.name : `${item.firstName} ${item.lastName}`}
@@ -181,7 +189,8 @@ const adminPage = () => {
           <Text style={styles.itemInfo}>Urgency: {item.urgency}</Text>
         </>
       )}
-    </TouchableOpacity>
+      </AnimatedButton>
+    </AnimatedListItem>
   );
 
   const renderDetailModal = () => (
@@ -264,18 +273,20 @@ const adminPage = () => {
           </ScrollView>
           
           <View style={styles.modalButtons}>
-            <TouchableOpacity
-              style={[styles.button, styles.deleteButton]}
+            <AnimatedButton
+              delay={0}
               onPress={() => deleteItem(selectedItem?.type + 's', selectedItem?.id)}
+              style={[styles.button, styles.deleteButton]}
             >
               <Text style={styles.buttonText}>Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.closeButton]}
+            </AnimatedButton>
+            <AnimatedButton
+              delay={100}
               onPress={() => setModalVisible(false)}
+              style={[styles.button, styles.closeButton]}
             >
               <Text style={styles.buttonText}>Close</Text>
-            </TouchableOpacity>
+            </AnimatedButton>
           </View>
         </View>
       </View>
@@ -285,29 +296,43 @@ const adminPage = () => {
   if (!isAuthenticated) {
     return (
       <View style={styles.container}>
-        <StatusBar style="dark" />
-        {/* <BackButton 
-      // variant = default, minimal, floating
-          variant="floating" 
-          color="#7c3aed" 
-          title=""
-        /> */}
-        <View style={styles.authContainer}>
-          <Text style={styles.title}>Admin Access</Text>
-          <Text style={styles.subtitle}>Enter admin password to continue</Text>
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Admin Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            onSubmitEditing={authenticate}
+        <StatusBar style="light" />
+        <AnimatedHeader style={styles.header}>
+          <View style={styles.headerContent}>
+            <AnimatedText delay={200} style={styles.headerTitle}>Admin</AnimatedText>
+            <AnimatedText delay={400} style={styles.headerSubtitle}>Secure access</AnimatedText>
+            <Animated.View 
+              entering={ZoomIn.delay(600).springify()}
+              style={styles.headerDecoration} 
+            />
+          </View>
+        </AnimatedHeader>
+        <View style={styles.backButtonContainer}>
+          <BackButton 
+            variant="floating" 
+            color="#ffffff" 
+            title=""
           />
-          
-          <TouchableOpacity style={styles.loginButton} onPress={authenticate}>
-            <Text style={styles.loginButtonText}>Login</Text>
-          </TouchableOpacity>
+        </View>
+        <View style={styles.authContainer}>
+          <AnimatedCard delay={300} style={styles.authCard}>
+            <Text style={styles.title}>Admin Access</Text>
+            <Text style={styles.subtitle}>Enter admin password to continue</Text>
+            
+            <TextInput
+              style={styles.input}
+              placeholder="Admin Password"
+              placeholderTextColor="#666666"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              onSubmitEditing={authenticate}
+            />
+            
+            <AnimatedButton delay={500} onPress={authenticate} style={styles.loginButton}>
+              <Text style={styles.loginButtonText}>Login</Text>
+            </AnimatedButton>
+          </AnimatedCard>
         </View>
       </View>
     );
@@ -315,13 +340,24 @@ const adminPage = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" />
-      {/* <BackButton 
-      // variant = default, minimal, floating
+      <StatusBar style="light" />
+      <AnimatedHeader style={styles.header}>
+        <View style={styles.headerContent}>
+          <AnimatedText delay={200} style={styles.headerTitle}>Admin Dashboard</AnimatedText>
+          <AnimatedText delay={400} style={styles.headerSubtitle}>Gadget Garage - Firestore Data</AnimatedText>
+          <Animated.View 
+            entering={ZoomIn.delay(600).springify()}
+            style={styles.headerDecoration} 
+          />
+        </View>
+      </AnimatedHeader>
+      <View style={styles.backButtonContainer}>
+        <BackButton 
           variant="floating" 
-          color="#7c3aed" 
+          color="#1e40af" 
           title=""
-        /> */}
+        />
+      </View>
       
       <ScrollView
         style={styles.content}
@@ -329,28 +365,23 @@ const adminPage = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Admin Dashboard</Text>
-          <Text style={styles.subtitle}>Gadget Garage - Firestore Data</Text>
-        </View>
-
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#007AFF" />
+            <ActivityIndicator size="large" color="#ffffff" />
             <Text style={styles.loadingText}>Loading data...</Text>
           </View>
         ) : (
           <>
             {/* Statistics */}
             <View style={styles.statsContainer}>
-              <View style={styles.statCard}>
+              <AnimatedCard delay={200} style={styles.statCard}>
                 <Text style={styles.statNumber}>{data.appointments.length}</Text>
                 <Text style={styles.statLabel}>Appointments</Text>
-              </View>
-              <View style={styles.statCard}>
+              </AnimatedCard>
+              <AnimatedCard delay={300} style={styles.statCard}>
                 <Text style={styles.statNumber}>{data.quotes.length}</Text>
                 <Text style={styles.statLabel}>Quotes</Text>
-              </View>
+              </AnimatedCard>
             </View>
 
             {/* Appointments */}
@@ -359,7 +390,7 @@ const adminPage = () => {
               {data.appointments.length === 0 ? (
                 <Text style={styles.emptyText}>No appointments found</Text>
               ) : (
-                data.appointments.map(item => renderItem(item, 'appointment'))
+                data.appointments.map((item, index) => renderItem(item, 'appointment', index))
               )}
             </View>
 
@@ -369,7 +400,7 @@ const adminPage = () => {
               {data.quotes.length === 0 ? (
                 <Text style={styles.emptyText}>No quotes found</Text>
               ) : (
-                data.quotes.map(item => renderItem(item, 'quote'))
+                data.quotes.map((item, index) => renderItem(item, 'quote', index))
               )}
             </View>
           </>
@@ -384,57 +415,128 @@ const adminPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#0a0a0a',
   },
   authContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: 16,
+    backgroundColor: '#0a0a0a',
   },
   header: {
-    marginBottom: 20,
+    backgroundColor: '#000000',
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1a1a1a',
+  },
+  headerContent: {
     alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1e293b',
+  headerTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#ffffff',
     marginBottom: 8,
+    textAlign: 'center',
+    textShadowColor: 'rgba(255, 255, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+    letterSpacing: 1,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#a0a0a0',
+    textAlign: 'center',
+    marginBottom: 12,
+    letterSpacing: 0.5,
+  },
+  headerDecoration: {
+    width: 80,
+    height: 3,
+    backgroundColor: '#ffffff',
+    borderRadius: 2,
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    top: 58,
+    left: 15,
+    zIndex: 10,
+  },
+  authCard: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 20,
+    padding: 30,
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#ffffff',
+    marginBottom: 8,
+    textShadowColor: 'rgba(255, 255, 255, 0.2)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+    letterSpacing: 1,
   },
   subtitle: {
     fontSize: 16,
-    color: '#64748b',
+    color: '#a0a0a0',
     textAlign: 'center',
+    paddingBottom: 15,
+    letterSpacing: 0.5,
   },
   input: {
     width: '100%',
-    maxWidth: 300,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 10,
+    padding: 18,
+    borderWidth: 2,
+    borderColor: '#333333',
+    borderRadius: 12,
     fontSize: 16,
     marginBottom: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#0f0f0f',
+    color: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   loginButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ffffff',
     paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
+    paddingVertical: 18,
+    borderRadius: 12,
     width: '100%',
-    maxWidth: 300,
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   loginButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '900',
     textAlign: 'center',
+    letterSpacing: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -445,7 +547,8 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#64748b',
+    color: '#a0a0a0',
+    letterSpacing: 0.5,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -453,47 +556,59 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   statCard: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    borderRadius: 15,
+    backgroundColor: '#1a1a1a',
+    padding: 24,
+    borderRadius: 20,
     alignItems: 'center',
     minWidth: 120,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   statNumber: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#ffffff',
     marginBottom: 5,
+    textShadowColor: 'rgba(255, 255, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   statLabel: {
     fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
+    color: '#a0a0a0',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   section: {
     marginBottom: 30,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#ffffff',
     marginBottom: 15,
+    letterSpacing: 1,
+    textShadowColor: 'rgba(255, 255, 255, 0.2)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   itemCard: {
-    backgroundColor: '#ffffff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: '#1a1a1a',
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 6,
   },
   itemHeader: {
     flexDirection: 'row',
@@ -502,55 +617,72 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   itemName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: 0.5,
   },
   itemDate: {
     fontSize: 12,
-    color: '#64748b',
+    color: '#888888',
+    fontWeight: '500',
   },
   itemInfo: {
     fontSize: 14,
-    color: '#475569',
-    marginBottom: 2,
+    color: '#b0b0b0',
+    marginBottom: 4,
+    lineHeight: 20,
   },
   emptyText: {
     fontSize: 16,
-    color: '#94a3b8',
+    color: '#666666',
     textAlign: 'center',
     fontStyle: 'italic',
     padding: 20,
+    letterSpacing: 0.5,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#1a1a1a',
     margin: 20,
-    borderRadius: 15,
-    padding: 20,
+    borderRadius: 20,
+    padding: 24,
     maxHeight: '80%',
     width: '90%',
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 16,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 15,
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#ffffff',
+    marginBottom: 20,
     textAlign: 'center',
+    letterSpacing: 1,
+    textShadowColor: 'rgba(255, 255, 255, 0.2)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   detailItem: {
     fontSize: 16,
-    marginBottom: 10,
-    color: '#475569',
+    marginBottom: 12,
+    color: '#b0b0b0',
+    lineHeight: 24,
   },
   detailLabel: {
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: 0.5,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -559,21 +691,31 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    padding: 15,
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 12,
     marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
   },
   deleteButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#dc2626',
+    borderWidth: 1,
+    borderColor: '#ef4444',
   },
   closeButton: {
-    backgroundColor: '#6b7280',
+    backgroundColor: '#2a2a2a',
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
   },
   buttonText: {
     color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '800',
     textAlign: 'center',
+    letterSpacing: 0.5,
   },
 });
 

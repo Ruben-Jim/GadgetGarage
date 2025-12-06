@@ -83,7 +83,7 @@ const RootLayout = () => {
         name="admin"
         options={{
           title: "admin",
-          headerShown: true
+          headerShown: false
         }}
       />
     </Stack>
